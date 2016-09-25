@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS cs4224.stock (
 s_w_id int,
 s_i_id int,
 s_price decimal,
+s_name text,
 s_quantity int,
 s_ytd decimal,
 s_order_cnt int,

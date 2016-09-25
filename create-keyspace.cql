@@ -1,1 +1,1 @@
-CREATE KEYSPACE cs4224;
+CREATE KEYSPACE cs4224 with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
