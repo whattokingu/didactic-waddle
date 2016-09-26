@@ -12,7 +12,6 @@ import udt
 # @param itemNumbers: warehouse for item. Should be array of size numItems
 # @param itemNumbers: qty for item. Should be array of size numItems
 # @param cluster: cassandra cluster object
-# @param cluster: keyspace of the database. should be 'cs4224'
 def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	print "Processing new order transaction"
 
