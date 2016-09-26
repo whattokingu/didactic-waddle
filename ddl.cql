@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS cs4224.district (
 d_w_id int,
 d_id int,
 d_name text,
-d_w_address frozen<address>,
+d_address frozen<address>,
 d_tax decimal,
 d_w_tax decimal,
 d_ytd decimal,

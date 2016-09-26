@@ -82,7 +82,7 @@ def populateDistricts(dirname, cluster):
 	warehouseTaxes = tmpWarehouseTaxes
 	tmpWarehouseTaxes = None
 
-	insert_district = session.prepare('INSERT INTO district (d_w_id, d_id, d_name, d_w_address, d_tax, d_w_tax, d_ytd, d_next_o_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+	insert_district = session.prepare('INSERT INTO district (d_w_id, d_id, d_name, d_address, d_tax, d_w_tax, d_ytd, d_next_o_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
 	for d in districts:
 		session.execute(insert_district, [d['D_W_ID'], d['D_ID'], d['D_NAME'], d['D_ADDRESS'], d['D_TAX'], warehouseTaxes.get(d['D_W_ID']), d['D_YTD'], d['D_NEXT_O_ID']])
 	session.shutdown()
