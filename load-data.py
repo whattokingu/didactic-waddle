@@ -234,17 +234,17 @@ def populateStocks(dirname, cluster):
 	namemap = {}
 	session = cluster.connect(KEYSPACE)
 	iprice_rows = session.execute(SimpleStatement('SELECT i_id, i_price, i_name FROM item'))
-	for (i_id, i_price, i_name) in iprice_rows:
-		pricemap[i_id] = i_price
-		namemap [i_id] = i_name
+	for row in iprice_rows:
+		pricemap[row.i_id] = row.i_price
+		namemap [row.i_id] = row.i_name
 
 	insert_stock = session.prepare('INSERT INTO stock (s_w_id, s_i_id, s_price, s_name, s_quantity, s_ytd, s_order_cnt, s_remote_cnt, s_dist_01, s_dist_02, s_dist_03, s_dist_04, s_dist_05, s_dist_06, s_dist_07, s_dist_08, s_dist_09, s_dist_10, s_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
 	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
 	for w_id, slist in groupby(sorted(stocks, key=lambda s: s['S_W_ID']), lambda s: s['S_W_ID']):
 		batchsz = 0
-		price = pricemap.get(s['S_I_ID'])
-		name = namemap.get(s['S_I_ID'])
 		for s in slist:
+			price = pricemap.get(s['S_I_ID'])
+			name = namemap.get(s['S_I_ID'])
 			batch.add(insert_stock, [w_id, s['S_I_ID'], price, name, s['S_QUANTITY'], s['S_YTD'], s['S_ORDER_CNT'], s['S_REMOTE_CNT'], s['S_DIST_01'], s['S_DIST_02'], s['S_DIST_03'], s['S_DIST_04'], s['S_DIST_05'], s['S_DIST_06'], s['S_DIST_07'], s['S_DIST_08'], s['S_DIST_09'], s['S_DIST_10'], s['S_DATA']])
 			batchsz+=1
 			if batchsz >= 60000:
