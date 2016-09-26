@@ -147,23 +147,10 @@ def helper(dist):
 	else :
 		return str(dist)
 
-cluster = Cluster()
-cust = dict()
-cust['d_id'] = 9
-cust['w_id'] = 5
-cust['c_id'] = 5
-newOrder(cust, 3, [60004,60005,60006], [5, 5, 5], [3, 3, 3], cluster)
-
-
-# session = cluster.connect(KEYSPACE)
-# stockVolQuery = session.prepare(
-# 		"""
-# 		SELECT s_quantity, s_price, s_ytd, s_order_cnt, s_remote_cnt, s_name,
-# 		""" + ' s_dist_' + helper(cust['d_id']) + ' as sinfo '
-# 		+
-# 		"""
-
-# 		FROM stock
-# 		WHERE s_i_id = ? AND s_w_id = ?
-# 		""")
+# cluster = Cluster()
+# cust = dict()
+# cust['d_id'] = 9
+# cust['w_id'] = 5
+# cust['c_id'] = 5
+# newOrder(cust, 3, [60004,60005,60006], [5, 5, 5], [3, 3, 3], cluster)
 
