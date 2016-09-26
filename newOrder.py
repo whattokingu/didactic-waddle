@@ -134,7 +134,7 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	print 'Customer: ' + str(cust['w_id']) + ' ' + str(cust['d_id']) + ' ' + str(cust['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
 	print 'w_tax: ' + str(taxes['w_tax']) + ' d_tax: ' + str(taxes['d_tax'])
 	print 'order: ' + str(order['id']) + ' date: ' + str(order['entry_d'])
-	print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount)
+	print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount*(1+taxes['w_tax']+taxes['d_tax'])*(1-custInfo['c_discount']))
 	for item in order['o_lines']:
 		print '  ' + str(item._i_id) + ' ' + sName[item._i_id] + ' ' + str(item._supply_w_id) + ' ' + str(item._quantity) + ' ' + str(item._amount) + ' ' + str(stockVol[item._i_id])
 
@@ -146,10 +146,10 @@ def helper(dist):
 	else :
 		return str(dist)
 
-# cluster = Cluster()
-# cust = dict()
-# cust['d_id'] = 9
-# cust['w_id'] = 5
-# cust['c_id'] = 5
-# newOrder(cust, 3, [60004,60005,60006], [5, 5, 5], [3, 3, 3], cluster)
+cluster = Cluster()
+cust = dict()
+cust['d_id'] = 9
+cust['w_id'] = 5
+cust['c_id'] = 5
+newOrder(cust, 3, [60004,60005,60006], [5, 5, 5], [3, 3, 3], cluster)
 
