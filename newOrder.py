@@ -30,8 +30,8 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	for row in orderNum_res:
 		orderNum = row.d_next_o_id
 	#get taxes
-	distTaxes = dict()
-	distTaxes_res = session.execute(
+	taxes = dict()
+	taxes_res = session.execute(
 		"""
 		SELECT d_tax, d_w_tax
 		FROM district
@@ -39,13 +39,12 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 		""",
 		(cust['d_id'], cust['w_id'])
 	)
-	for row in distTaxes:
-		distTaxes['w_tax'] = row.d_w_tax
-		distTaxes['d_tax'] = row.d_tax
+	for row in taxes_res:
+		taxes['w_tax'] = row.d_w_tax
+		taxes['d_tax'] = row.d_tax
 
-	#get cust info
-	custDisc	
-	custDisc_res = session,execute(
+	#get cust info	
+	custDisc_res = session.execute(
 		"""
 		SELECT c_discount, c_last, c_credit
 		FROM customer
@@ -72,8 +71,8 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	totalAmount = 0
 	stockVolQuery = session.prepare(
 		"""
-		SELECT s_quantity, s_price, s_ytd, s_order_cnt, s_remote_cnt, s_name
-		""" + ' s_dist_' + helper(2) + ' as sinfo '
+		SELECT s_quantity, s_price, s_ytd, s_order_cnt, s_remote_cnt, s_name,
+		""" + ' s_dist_' + helper(cust['d_id']) + ' as sinfo '
 		+
 		"""
 		FROM stock
@@ -97,13 +96,15 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 			sRemoteCnt[itemNumbers[i]] = row.s_remote_cnt
 			sName[itemNumbers[i]] = row.s_name
 			totalAmount += row.s_price * qty[i]
-		adjusted_qty = stockVol[itemsNumbers[i]] - qty[i]
+		adjusted_qty = stockVol[itemNumbers[i]] - qty[i]
 		if adjusted_qty < 10:
 			adjusted_qty += 100
+		stockVol[itemNumbers[i]] = adjusted_qty
 		remoteCnt = sRemoteCnt[itemNumbers[i]]
 		if supplierWarehouses[i] != custId['w_id']:
 			remoteCnt+=1
-		batch.add(stockUpdateQuery, [adjusted_qty, sYTD[itemNumbers[i] + qty[i], s_order_cnt+1, remoteCnt, itemNumbers[i], supplierWarehouses[i]]])
+		print 
+		batch.add(stockUpdateQuery, [adjusted_qty, sYTD[itemNumbers[i]] + qty[i], sOrderCnt[itemNumbers[i]]+1, remoteCnt, itemNumbers[i], supplierWarehouses[i]])
 
 
 	batch.add(
@@ -126,11 +127,17 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	order['all_local'] = 1 if all(int(w_id) == int(cust['w_id']) for w_id in supplierWarehouses) else 0
 	order['o_lines'] = []
 	for i in range(0, numItems):
-		order['o_lines'].append(udt.OrderLine(itemNumbers[i], None, stockPrice[itemNumbers[i] * qty[i], supplierWarehouses[i], qty[i], sDistInfo[itemNumbers[i]]]))
+		order['o_lines'].append(udt.OrderLine(itemNumbers[i], None, stockPrice[itemNumbers[i]] * qty[i], supplierWarehouses[i], qty[i], sDistInfo[itemNumbers[i]]))
 	insert_order = session.prepare('INSERT INTO "order" (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d, o_o_lines) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
 	batch.add(insert_order,[order['w_id'], order['d_id'], order['id'], order['c_id'], order['carrier_id'], order['ol_cnt'], order['all_local'], order['entry_d'], order['o_lines']])
 
 	session.execute(batch)
+	print 'Customer: ' + str(cust['w_id']) + ' ' + str(cust['d_id']) + ' ' + str(cust['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
+	print 'w_tax: ' + str(taxes['w_tax']) + ' d_tax: ' + str(taxes['d_tax'])
+	print 'order: ' + str(order['id']) + ' date: ' + str(order['entry_d'])
+	print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount)
+	for item in order['o_lines']:
+		print '  ' + str(item._i_id) + ' ' + sName[item._i_id] + ' ' + str(item._supply_w_id) + ' ' + str(item._quantity) + ' ' + str(item._amount) + ' ' + str(stockVol[item._i_id])
 
 
 # helper to convert district number to string.
@@ -140,4 +147,23 @@ def helper(dist):
 	else :
 		return str(dist)
 
+cluster = Cluster()
+cust = dict()
+cust['d_id'] = 9
+cust['w_id'] = 5
+cust['c_id'] = 5
+newOrder(cust, 3, [60004,60005,60006], [5, 5, 5], [3, 3, 3], cluster)
+
+
+# session = cluster.connect(KEYSPACE)
+# stockVolQuery = session.prepare(
+# 		"""
+# 		SELECT s_quantity, s_price, s_ytd, s_order_cnt, s_remote_cnt, s_name,
+# 		""" + ' s_dist_' + helper(cust['d_id']) + ' as sinfo '
+# 		+
+# 		"""
+
+# 		FROM stock
+# 		WHERE s_i_id = ? AND s_w_id = ?
+# 		""")
 
