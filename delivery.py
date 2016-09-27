@@ -49,8 +49,19 @@ def delivery(wid, carrierid, cluster):
 	for order in oldestDistrictOrder:
 		ol = order.o_o_lines
 		totalAmt = 0
+		delTime = int(time.mktime(datetime.now().timetuple()) * 1000) #current time in int
+		orders = []
 		for line in ol:
 			totalAmt += line.ol_amount
+			orders.append(udt.OrderLine(line.ol_i_id, delTime, line.ol_amount, line.ol_supply_w_id, line.ol_quantity, line.ol_dist_info))
+		orderUpdate = session.prepare(
+			"""
+			UPDATE "order"
+			SET o_carrier_id = ?, o_o_lines = ?
+			WHERE o_id = ? AND o_d_id = ? AND o_w_id = ?
+			"""
+			)
+		batch.add(orderUpdate, [carrierid, orders, order.o_id, order.o_d_id, order.o_w_id])
 		#update customer balance
 		batch.add(
 			"""
@@ -60,14 +71,8 @@ def delivery(wid, carrierid, cluster):
 			""",
 			(custBal[order.o_c_id] + totalAmt, custDelCnt[order.o_c_id] + 1, order.o_c_id, order.o_d_id, order.o_w_id)
 			)
-		batch.add(
-			"""
-			UPDATE "order"
-			SET o_carrier_id = %s
-			WHERE o_id = %s AND o_d_id = %s AND o_w_id = %s
-			""",
-			(carrierid, order.o_id, order.o_d_id, order.o_w_id)
-			)
 	session.execute(batch)
 cluster = Cluster()
-delivery(5, 2, cluster)
+delivery(5, 11, cluster)
+time = int(time.mktime(datetime.now().timetuple())*1000)
+print time

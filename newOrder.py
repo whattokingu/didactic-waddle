@@ -120,13 +120,13 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	order['d_id'] = cust['d_id']
 	order['w_id'] = cust['w_id']
 	order['c_id'] = cust['c_id']
-	order['entry_d'] = int(time.mktime(datetime.now().timetuple())) #current time in int
-	order['carrier_id'] = None
+	order['entry_d'] = int(time.mktime(datetime.now().timetuple())*1000) #current time in int
+	order['carrier_id'] = -1
 	order['ol_cnt'] = numItems
 	order['all_local'] = 1 if all(int(w_id) == int(cust['w_id']) for w_id in supplierWarehouses) else 0
 	order['o_lines'] = []
 	for i in range(0, numItems):
-		order['o_lines'].append(udt.OrderLine(itemNumbers[i], None, stockPrice[itemNumbers[i]] * qty[i], supplierWarehouses[i], qty[i], sDistInfo[itemNumbers[i]]))
+		order['o_lines'].append(udt.OrderLine(itemNumbers[i], -1, stockPrice[itemNumbers[i]] * qty[i], supplierWarehouses[i], qty[i], sDistInfo[itemNumbers[i]]))
 	insert_order = session.prepare('INSERT INTO "order" (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d, o_o_lines) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
 	batch.add(insert_order,[order['w_id'], order['d_id'], order['id'], order['c_id'], order['carrier_id'], order['ol_cnt'], order['all_local'], order['entry_d'], order['o_lines']])
 
