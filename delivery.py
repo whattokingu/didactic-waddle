@@ -72,7 +72,7 @@ def delivery(wid, carrierid, cluster):
 			(custBal[order.o_c_id] + totalAmt, custDelCnt[order.o_c_id] + 1, order.o_c_id, order.o_d_id, order.o_w_id)
 			)
 	session.execute(batch)
-cluster = Cluster()
-delivery(5, 11, cluster)
-time = int(time.mktime(datetime.now().timetuple())*1000)
-print time
+# cluster = Cluster()
+# delivery(5, 11, cluster)
+# time = int(time.mktime(datetime.now().timetuple())*1000)
+# print time
