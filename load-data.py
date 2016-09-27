@@ -171,7 +171,7 @@ def populateOrders(dirname, cluster):
 			o['O_D_ID'] = int(float(o['O_D_ID']))
 			o['O_ID'] = int(float(o['O_ID']))
 			o['O_C_ID'] = int(float(o['O_C_ID']))
-			o['O_CARRIER_ID'] = int(float(o['O_CARRIER_ID'])) if not o['O_CARRIER_ID']=='null' else None
+			o['O_CARRIER_ID'] = int(float(o['O_CARRIER_ID'])) if not o['O_CARRIER_ID']=='null' else -1
 			o['O_OL_CNT'] = int(float(o['O_OL_CNT']))
 			o['O_ALL_LOCAL'] = bool(o['O_ALL_LOCAL'])
 			o['O_ENTRY_D'] = int(time.mktime(datetime.strptime(o['O_ENTRY_D'][:19], '%Y-%m-%d %H:%M:%S').timetuple()))
@@ -188,7 +188,7 @@ def populateOrders(dirname, cluster):
 			ol['OL_O_ID'] = int(float(ol['OL_O_ID']))
 			ol['OL_NUMBER'] = int(float(ol['OL_NUMBER']))
 			ol['OL_I_ID'] = int(float(ol['OL_I_ID']))
-			ol['OL_DELIVERY_D'] = int(time.mktime(datetime.strptime(ol['OL_DELIVERY_D'][:19], '%Y-%m-%d %H:%M:%S').timetuple())) if ol['OL_DELIVERY_D']!='null' else None
+			ol['OL_DELIVERY_D'] = int(time.mktime(datetime.strptime(ol['OL_DELIVERY_D'][:19], '%Y-%m-%d %H:%M:%S').timetuple())) if ol['OL_DELIVERY_D']!='null' else -1
 			ol['OL_AMOUNT'] = float(ol['OL_AMOUNT'])
 			ol['OL_SUPPLY_W_ID'] = int(float(ol['OL_SUPPLY_W_ID']))
 			ol['OL_QUANTITY'] = float(ol['OL_QUANTITY'])

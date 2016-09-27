@@ -146,10 +146,10 @@ def helper(dist):
 	else :
 		return str(dist)
 
-cluster = Cluster()
-cust = dict()
-cust['d_id'] = 9
-cust['w_id'] = 5
-cust['c_id'] = 5
-newOrder(cust, 3, [60004,60005,60006], [5, 5, 5], [3, 3, 3], cluster)
+# cluster = Cluster()
+# cust = dict()
+# cust['d_id'] = 9
+# cust['w_id'] = 5
+# cust['c_id'] = 5
+# newOrder(cust, 3, [60004,60005,60006], [5, 5, 5], [3, 3, 3], cluster)
 
