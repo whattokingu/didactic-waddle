@@ -36,7 +36,7 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 		FROM district
 		WHERE d_id = %s AND d_w_id = %s
 		""",
-		(cust['d_id'], cust['w_id'])
+		(custId['d_id'], custId['w_id'])
 	)
 	for row in taxes_res:
 		taxes['w_tax'] = row.d_w_tax
@@ -49,7 +49,7 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 		FROM customer
 		WHERE c_w_id = %s AND c_d_id = %s AND c_id = %s
 		""",
-		(cust['w_id'], cust['d_id'], cust['c_id'])
+		(custId['w_id'], custId['d_id'], custId['c_id'])
 		)
 	custInfo = dict()
 	for row in custDisc_res:
@@ -71,7 +71,7 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	stockVolQuery = session.prepare(
 		"""
 		SELECT s_quantity, s_price, s_ytd, s_order_cnt, s_remote_cnt, s_name,
-		""" + ' s_dist_' + helper(cust['d_id']) + ' as sinfo '
+		""" + ' s_dist_' + helper(custId['d_id']) + ' as sinfo '
 		+
 		"""
 		FROM stock
@@ -87,6 +87,8 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	for i in range(0, numItems):
 		stockVol_res = session.execute(stockVolQuery, [itemNumbers[i], supplierWarehouses[i]])
 		for row in stockVol_res:
+			print row
+			print qty
 			stockVol[itemNumbers[i]] = row.s_quantity
 			stockPrice[itemNumbers[i]] = row.s_price
 			sDistInfo[itemNumbers[i]] = row.sinfo
@@ -95,6 +97,11 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 			sRemoteCnt[itemNumbers[i]] = row.s_remote_cnt
 			sName[itemNumbers[i]] = row.s_name
 			totalAmount += row.s_price * qty[i]
+		print custId
+		print supplierWarehouses
+		print itemNumbers
+		print i
+		print stockVol
 		adjusted_qty = stockVol[itemNumbers[i]] - qty[i]
 		if adjusted_qty < 10:
 			adjusted_qty += 100
@@ -117,13 +124,13 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	#new order details
 	order = dict()
 	order['id'] = orderNum
-	order['d_id'] = cust['d_id']
-	order['w_id'] = cust['w_id']
-	order['c_id'] = cust['c_id']
+	order['d_id'] = custId['d_id']
+	order['w_id'] = custId['w_id']
+	order['c_id'] = custId['c_id']
 	order['entry_d'] = int(time.mktime(datetime.now().timetuple())*1000) #current time in int
 	order['carrier_id'] = -1
 	order['ol_cnt'] = numItems
-	order['all_local'] = 1 if all(int(w_id) == int(cust['w_id']) for w_id in supplierWarehouses) else 0
+	order['all_local'] = 1 if all(int(w_id) == int(custId['w_id']) for w_id in supplierWarehouses) else 0
 	order['o_lines'] = []
 	for i in range(0, numItems):
 		order['o_lines'].append(udt.OrderLine(itemNumbers[i], -1, stockPrice[itemNumbers[i]] * qty[i], supplierWarehouses[i], qty[i], sDistInfo[itemNumbers[i]]))
@@ -131,7 +138,7 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	batch.add(insert_order,[order['w_id'], order['d_id'], order['id'], order['c_id'], order['carrier_id'], order['ol_cnt'], order['all_local'], order['entry_d'], order['o_lines']])
 
 	session.execute(batch)
-	print 'Customer: ' + str(cust['w_id']) + ' ' + str(cust['d_id']) + ' ' + str(cust['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
+	print 'Customer: ' + str(custId['w_id']) + ' ' + str(custId['d_id']) + ' ' + str(custId['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
 	print 'w_tax: ' + str(taxes['w_tax']) + ' d_tax: ' + str(taxes['d_tax'])
 	print 'order: ' + str(order['id']) + ' date: ' + str(order['entry_d'])
 	print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount*(1+taxes['w_tax']+taxes['d_tax'])*(1-custInfo['c_discount']))

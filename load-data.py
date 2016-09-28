@@ -247,7 +247,7 @@ def populateStocks(dirname, cluster):
 			name = namemap.get(s['S_I_ID'])
 			batch.add(insert_stock, [w_id, s['S_I_ID'], price, name, s['S_QUANTITY'], s['S_YTD'], s['S_ORDER_CNT'], s['S_REMOTE_CNT'], s['S_DIST_01'], s['S_DIST_02'], s['S_DIST_03'], s['S_DIST_04'], s['S_DIST_05'], s['S_DIST_06'], s['S_DIST_07'], s['S_DIST_08'], s['S_DIST_09'], s['S_DIST_10'], s['S_DATA']])
 			batchsz+=1
-			if batchsz >= 60000:
+			if batchsz >= 1500:
 				session.execute(batch)
 				batch.clear()
 				batchsz = 0
