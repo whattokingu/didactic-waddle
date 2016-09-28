@@ -203,10 +203,17 @@ def populateOrders(dirname, cluster):
 	insert_order = session.prepare('INSERT INTO "order" (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d, o_o_lines) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
 	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
 	for (w_id, d_id), orderlist in groupby(sorted(orders, key=lambda o: (o['O_W_ID'], o['O_D_ID'])), lambda o: (o['O_W_ID'], o['O_D_ID'])):
+		batchsz = 0
 		for o in orderlist:
 			batch.add(insert_order, [w_id, d_id, o['O_ID'], o['O_C_ID'], o['O_CARRIER_ID'], o['O_OL_CNT'], o['O_ALL_LOCAL'], o['O_ENTRY_D'], o['O_O_LINES']])
-		session.execute(batch)
-		batch.clear()
+			batchsz+=1
+			if batchsz >= 1500:
+				session.execute(batch)
+				batch.clear()
+				batchsz = 0
+		if batchsz > 0:
+			session.execute(batch)
+			batch.clear()
 	session.shutdown()
 
 # @param dirname Directory path where "stock.csv" is stored
