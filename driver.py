@@ -7,6 +7,7 @@ from dbconf import KEYSPACE, CONSISTENCY_LEVEL
 from newOrder import newOrder
 from custPayment import custPayment
 from delivery import delivery
+from order_status import orderStatus
 
 
 # @params dirname where the xact files reside
@@ -64,7 +65,7 @@ def handleDelivery(line, xactreader, cluster):
 	delivery(int(line[1]), int(line[2]), cluster)
 
 def handleOrderStatus(line, xactreader, cluster):
-	print "order status"
+	orderStatus(int(line[0]), int(line[1]), int(line[2]), cluster)
 def handleStockStatus(line, xactreader, cluster):
 	print "stock status"
 def handlePopularItem(line, xactreader, cluster):
