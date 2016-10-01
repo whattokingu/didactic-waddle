@@ -77,6 +77,8 @@ o_o_lines list<frozen<order_line>>,
 primary key ((o_w_id, o_d_id), o_id))
 with clustering order by (o_id desc);
 
+CREATE INDEX order_o_c_id on cs4224."order" (o_c_id);
+
 CREATE TABLE IF NOT EXISTS cs4224.stock (
 s_w_id int,
 s_i_id int,
