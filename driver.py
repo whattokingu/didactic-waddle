@@ -65,7 +65,7 @@ def handleDelivery(line, xactreader, cluster):
 	delivery(int(line[1]), int(line[2]), cluster)
 
 def handleOrderStatus(line, xactreader, cluster):
-	orderStatus(int(line[0]), int(line[1]), int(line[2]), cluster)
+	orderStatus(int(line[1]), int(line[2]), int(line[3]), cluster)
 def handleStockStatus(line, xactreader, cluster):
 	print "stock status"
 def handlePopularItem(line, xactreader, cluster):
