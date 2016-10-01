@@ -105,9 +105,9 @@ def custPayment(custId, payment, cluster):
 
 def formatAddress(address):
 		return address.street_1 + '\n' + address.street_2 + '\n' + address.city + ', ' + address.state + '\n' + str(address.zipcode)
-cluster = Cluster()
-cust = dict()
-cust['w_id'] = 5
-cust['d_id'] = 9
-cust['c_id'] = 5
-custPayment(cust, 123123,cluster)
+# cluster = Cluster()
+# cust = dict()
+# cust['w_id'] = 5
+# cust['d_id'] = 9
+# cust['c_id'] = 5
+# custPayment(cust, 123123,cluster)
