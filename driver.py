@@ -8,6 +8,7 @@ from newOrder import newOrder
 from custPayment import custPayment
 from delivery import delivery
 from order_status import orderStatus
+from sotckLevel import stockLevel
 
 
 # @params dirname where the xact files reside
@@ -67,7 +68,7 @@ def handleDelivery(line, xactreader, cluster):
 def handleOrderStatus(line, xactreader, cluster):
 	orderStatus(int(line[1]), int(line[2]), int(line[3]), cluster)
 def handleStockStatus(line, xactreader, cluster):
-	print "stock status"
+	stockLevel(int(line[1]), int(line[2]), int(line[3]), int(line[4]), cluster)
 def handlePopularItem(line, xactreader, cluster):
 	print "popular item"
 def handleTopBalance(line, xactreader, cluster):
