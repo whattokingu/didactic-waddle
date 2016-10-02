@@ -40,5 +40,5 @@ def stockLevel(wid, did, threshold, L, cluster):
 		if row.s_quantity < threshold:
 			count+=1
 	print count
-cluster = Cluster()
-stockLevel(3,3,100,10, cluster)
+# cluster = Cluster()
+# stockLevel(3,3,100,10, cluster)
