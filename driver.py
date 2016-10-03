@@ -6,7 +6,7 @@ import traceback
 from decimal import Decimal
 from datetime import datetime
 from cassandra.cluster import Cluster
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, MULTI_CLUSTER, CLUSTER_ADDRESSES
 
 from newOrder import newOrder
 from custPayment import custPayment
@@ -125,7 +125,11 @@ if __name__ == "__main__":
 
 	if not dirname.endswith("/"):
 		dirname+="/"
-	cluster = Cluster()
+	cluster = None
+	if MULTI_CLUSTER:
+		cluster = Cluster(CLUSTE_ADDRESSES[clientNum % 3])
+	else:
+		cluster = Cluster()
 	print "Client No. " + str(clientNum) + ": starting transactions"
 	msg = readTransactions(dirname, clientNum , cluster)		
 	print "Client No. " + str(clientNum) + ": " + msg
