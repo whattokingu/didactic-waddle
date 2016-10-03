@@ -23,7 +23,7 @@ def readTransactions(dirname, file, cluster):
 	xactCount = 0
 	try:
 		with open(dirname+ str(file) + '.txt', 'r') as xactfile:
-			print "reader from: " + str(file) + ".txt"
+			print "reading from: " + str(file) + ".txt"
 			xactreader = itewrapper(csv.reader(xactfile, delimiter=','))
 			while xactreader.hasnext():
 				line = xactreader.next()
@@ -111,33 +111,24 @@ class itewrapper(object):
       else: self._hasnext = True
     return self._hasnext
 
-class clientThread(threading.Thread):
-	def __init__(self, clientId, dirname):
-		threading.Thread.__init__(self)
-		self.threadID = clientId
-		self.dirname = dirname
-	def run(self):
-		cluster = Cluster()
-		print "thread " + str(self.threadID) + ": starting transactions"
-		msg = readTransactions(self.dirname, self.threadID, cluster)
-		print "Thread " + str(self.threadID) + ": " + msg
-		print "thread " + str(self.threadID) + ": ending transactions"
 
-print "processing transactions: "
+
 if __name__ == "__main__":
 	if len(sys.argv)<3:
 		print "Please specify a transaction input folder"
-		print "please specify number of clients"
-		print "e.g. python driver.py <folder> <numClients>"
+		print "please specify client number, e.g., 2"
+		print "e.g. python driver.py <folder> <fileNum>"
 		exit()
 	dirname = sys.argv[1]
-	numClients = int(sys.argv[2])
-
+	clientNum = int(sys.argv[2])
+	print "processing transactions: "
 
 	if not dirname.endswith("/"):
 		dirname+="/"
-	for i in range (0, numClients):
-		thread = clientThread(i, dirname)
-		thread.start()
+	cluster = Cluster()
+	print "Client No. " + str(clientNum) + ": starting transactions"
+	msg = readTransactions(dirname, clientNum , cluster)		
+	print "Client No. " + str(clientNum) + ": " + msg
+	print "Client No. " + str(clientNum) + ": ending transactions"
 
 
