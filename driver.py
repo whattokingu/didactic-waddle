@@ -1,5 +1,9 @@
 import sys
 import csv
+import threading
+import time
+import traceback
+from decimal import Decimal
 from datetime import datetime
 from cassandra.cluster import Cluster
 from dbconf import KEYSPACE, CONSISTENCY_LEVEL
@@ -15,29 +19,43 @@ from popular_item import popularItems
 # @params file filename(should be an int) without extension
 # @params cluster: an instance of the cluster
 def readTransactions(dirname, file, cluster):
-	with open(dirname+ str(file) + '.txt', 'r') as xactfile:
-		print "reader from: " + str(file) + ".txt"
-		xactreader = itewrapper(csv.reader(xactfile, delimiter=','))
-		while xactreader.hasnext():
-			line = xactreader.next()
-			xactType = line[0]
-			print "processing xactType:" +xactType
-			if xactType == 'N':
-				handleNewOrder(line, xactreader, cluster)
-			elif xactType == 'P':
-				handlePayment(line, xactreader, cluster)
-			elif xactType == 'D':
-				handleDelivery(line, xactreader, cluster)
-			elif xactType == 'O':
-				handleOrderStatus(line, xactreader, cluster)
-			elif xactType == 'S':
-				handleStockStatus(line, xactreader, cluster)
-			elif xactType == 'I':
-				handlePopularItem(line, xactreader, cluster)
-			elif xactType == 'T':
-				handleTopBalance(line, xactreader, cluster)
-			else:
-				print "something went wrong."
+	timeStart = time.time()
+	xactCount = 0
+	try:
+		with open(dirname+ str(file) + '.txt', 'r') as xactfile:
+			print "reader from: " + str(file) + ".txt"
+			xactreader = itewrapper(csv.reader(xactfile, delimiter=','))
+			while xactreader.hasnext():
+				line = xactreader.next()
+				xactType = line[0]
+				print "processing xactType:" +xactType
+				if xactType == 'N':
+					handleNewOrder(line, xactreader, cluster)
+				elif xactType == 'P':
+					handlePayment(line, xactreader, cluster)
+				elif xactType == 'D':
+					handleDelivery(line, xactreader, cluster)
+				elif xactType == 'O':
+					handleOrderStatus(line, xactreader, cluster)
+				elif xactType == 'S':
+					handleStockStatus(line, xactreader, cluster)
+				elif xactType == 'I':
+					handlePopularItem(line, xactreader, cluster)
+				elif xactType == 'T':
+					handleTopBalance(line, xactreader, cluster)
+				else:
+					print "something went wrong."
+				xactCount+=1
+	except Exception as e:
+		print "An Error has occured:"
+		print e
+		exc_type, exc_value, exc_traceback = sys.exc_info()
+		traceback.print_exc()
+		timeEnd = time.time()
+		return "transaction Stats: {0} transactions in {1} ms".format(xactCount, (timeEnd - timeStart)*1000.0)
+	timeEnd = time.time()
+	return "transaction Stats: {0} transactions in {1} ms".format(xactCount, (timeEnd - timeStart)*1000.0)
+
 
 def handleNewOrder(line, xactreader, cluster):
 	custId = dict()
@@ -57,10 +75,10 @@ def handleNewOrder(line, xactreader, cluster):
 
 def handlePayment(line, xactreader, cluster):
 	custId = dict()
-	custId['c_id'] = int(line[1])
-	custId['w_id'] = int(line[2])
-	custId['d_id'] = int(line[3])
-	custPayment(custId, float(line[4]), cluster)
+	custId['w_id'] = int(line[1])
+	custId['d_id'] = int(line[2])
+	custId['c_id'] = int(line[3])
+	custPayment(custId, Decimal(line[4]), cluster)
 
 def handleDelivery(line, xactreader, cluster):
 	delivery(int(line[1]), int(line[2]), cluster)
@@ -93,18 +111,33 @@ class itewrapper(object):
       else: self._hasnext = True
     return self._hasnext
 
+class clientThread(threading.Thread):
+	def __init__(self, clientId, dirname):
+		threading.Thread.__init__(self)
+		self.threadID = clientId
+		self.dirname = dirname
+	def run(self):
+		cluster = Cluster()
+		print "thread " + str(self.threadID) + ": starting transactions"
+		msg = readTransactions(self.dirname, self.threadID, cluster)
+		print "Thread " + str(self.threadID) + ": " + msg
+		print "thread " + str(self.threadID) + ": ending transactions"
+
 print "processing transactions: "
 if __name__ == "__main__":
-	if len(sys.argv)<2:
+	if len(sys.argv)<3:
 		print "Please specify a transaction input folder"
+		print "please specify number of clients"
+		print "e.g. python driver.py <folder> <numClients>"
 		exit()
 	dirname = sys.argv[1]
+	numClients = int(sys.argv[2])
 
-	cluster = Cluster()
 
 	if not dirname.endswith("/"):
 		dirname+="/"
-	for i in range (0, 1):
-		readTransactions(dirname, i, cluster)
+	for i in range (0, numClients):
+		thread = clientThread(i, dirname)
+		thread.start()
 
 

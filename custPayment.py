@@ -1,5 +1,5 @@
 from cassandra.cluster import Cluster 
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, PRINT_OUTPUT
 from cassandra.query import BatchStatement, SimpleStatement
 from datetime import datetime
 from decimal import *
@@ -88,19 +88,20 @@ def custPayment(custId, payment, cluster):
 		(custInfo['c_balance'] - payment, custInfo['c_ytd_payment'] + payment, custInfo['c_payment_cnt'] + 1, custId['w_id'], custId['d_id'], custId['c_id'])
 		)
 	session.execute(batch)
-	print "Customer: " + str(custId['w_id']) + ' ' + str(custId['d_id']) + ' ' + str(custId['c_id']) + ' ' + custInfo['c_first'] + ' ' + custInfo['c_middle'] + ' ' + custInfo['c_last']
-	print formatAddress(custInfo['c_address'])
-	print custInfo['c_phone']
-	print custInfo['c_since']
-	print custInfo['c_credit']
-	print custInfo['c_credit_lim']
-	print custInfo['c_discount']
-	print custInfo['c_balance'] - payment
-	print "Warehouse address: "
-	print formatAddress(warehouseData['w_address'])
-	print "district address: "
-	print formatAddress(districtData['d_address'])
-	print "payment: " + str(payment)
+	if PRINT_OUTPUT:
+		print "Customer: " + str(custId['w_id']) + ' ' + str(custId['d_id']) + ' ' + str(custId['c_id']) + ' ' + custInfo['c_first'] + ' ' + custInfo['c_middle'] + ' ' + custInfo['c_last']
+		print formatAddress(custInfo['c_address'])
+		print custInfo['c_phone']
+		print custInfo['c_since']
+		print custInfo['c_credit']
+		print custInfo['c_credit_lim']
+		print custInfo['c_discount']
+		print custInfo['c_balance'] - payment
+		print "Warehouse address: "
+		print formatAddress(warehouseData['w_address'])
+		print "district address: "
+		print formatAddress(districtData['d_address'])
+		print "payment: " + str(payment)
 
 def formatAddress(address):
 		return address.street_1 + '\n' + address.street_2 + '\n' + address.city + ', ' + address.state + '\n' + str(address.zipcode)

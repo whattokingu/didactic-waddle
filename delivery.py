@@ -1,5 +1,5 @@
 from cassandra.cluster import Cluster 
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, PRINT_OUTPUT
 from cassandra.query import BatchStatement, SimpleStatement
 from datetime import datetime
 import time

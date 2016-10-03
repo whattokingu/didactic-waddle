@@ -1,5 +1,5 @@
 from cassandra.query import SimpleStatement, named_tuple_factory
-from dbconf import KEYSPACE
+from dbconf import KEYSPACE, PRINT_OUTPUT
 from udt import OrderLine
 from cassandra.cluster import Cluster 
 
@@ -39,6 +39,7 @@ def stockLevel(wid, did, threshold, L, cluster):
 	for row in stocklevel_res:
 		if row.s_quantity < threshold:
 			count+=1
-	print count
+	if PRINT_OUTPUT:
+		print count
 # cluster = Cluster()
 # stockLevel(3,3,100,10, cluster)

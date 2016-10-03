@@ -1,5 +1,5 @@
 from cassandra.query import named_tuple_factory
-from dbconf import KEYSPACE
+from dbconf import KEYSPACE, PRINT_OUTPUT
 from udt import OrderLine
 
 # We can be sure customer and item won't get deleted or have name changed as these
@@ -10,9 +10,7 @@ def popularItems(w_id, d_id, numOrders, cluster):
 	print 'No. orders to examine: %d' % (numOrders)
 	print ''
 
-	cluster.register_user_type(KEYSPACE, 'order_line', OrderLine)
 	session = cluster.connect(KEYSPACE)
-	session.row_factory = named_tuple_factory
 
 	orders = session.execute('SELECT o_id, o_c_id, o_entry_d, o_o_lines from "order" WHERE o_w_id=%s AND o_d_id=%s LIMIT %s', [w_id, d_id, numOrders])
 	
@@ -64,20 +62,21 @@ def popularItems(w_id, d_id, numOrders, cluster):
 		session.shutdown()
 
 		item_xact_cnt = {}
-		for idx, ol in enumerate(xact_popular_items):
-			print 'Order %d on %s' % (orders[idx].o_id, orders[idx].o_entry_d)
-			print 'Customer %s %s %s' % (cname_map[orders[idx].o_c_id]['first'], cname_map[orders[idx].o_c_id]['middle'], cname_map[orders[idx].o_c_id]['last'])
-			for item in ol:
-				print 'Item: %s' % (iname_map[item['id']])
-				print 'Quantity: %d' % (item['qty'])
-				if item_xact_cnt.get(item['id']) is None:
-					item_xact_cnt[item['id']] = 0
-				item_xact_cnt[item['id']]+=1
-				print ''
-		print ''
+		if PRINT_OUTPUT:
+			for idx, ol in enumerate(xact_popular_items):
+				print 'Order %d on %s' % (orders[idx].o_id, orders[idx].o_entry_d)
+				print 'Customer %s %s %s' % (cname_map[orders[idx].o_c_id]['first'], cname_map[orders[idx].o_c_id]['middle'], cname_map[orders[idx].o_c_id]['last'])
+				for item in ol:
+					print 'Item: %s' % (iname_map[item['id']])
+					print 'Quantity: %d' % (item['qty'])
+					if item_xact_cnt.get(item['id']) is None:
+						item_xact_cnt[item['id']] = 0
+					item_xact_cnt[item['id']]+=1
+					print ''
+			print ''
 
-		for i_id, num_xact in item_xact_cnt.items():
-			print '%s is in %f%% of %d orders' % (iname_map[i_id], num_xact*100/float(numOrders), numOrders)
+			for i_id, num_xact in item_xact_cnt.items():
+				print '%s is in %f%% of %d orders' % (iname_map[i_id], num_xact*100/float(numOrders), numOrders)
 	except Exception as e:
 		print 'Error fetching data from database'
 		print str(e)

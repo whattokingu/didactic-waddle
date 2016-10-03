@@ -1,5 +1,5 @@
 from cassandra.cluster import Cluster 
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, PRINT_OUTPUT
 from cassandra.query import BatchStatement
 from datetime import datetime
 import time
@@ -87,8 +87,6 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	for i in range(0, numItems):
 		stockVol_res = session.execute(stockVolQuery, [itemNumbers[i], supplierWarehouses[i]])
 		for row in stockVol_res:
-			print row
-			print qty
 			stockVol[itemNumbers[i]] = row.s_quantity
 			stockPrice[itemNumbers[i]] = row.s_price
 			sDistInfo[itemNumbers[i]] = row.sinfo
@@ -97,19 +95,15 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 			sRemoteCnt[itemNumbers[i]] = row.s_remote_cnt
 			sName[itemNumbers[i]] = row.s_name
 			totalAmount += row.s_price * qty[i]
-		print custId
-		print supplierWarehouses
-		print itemNumbers
-		print i
-		print stockVol
 		adjusted_qty = stockVol[itemNumbers[i]] - qty[i]
+
 		if adjusted_qty < 10:
 			adjusted_qty += 100
 		stockVol[itemNumbers[i]] = adjusted_qty
 		remoteCnt = sRemoteCnt[itemNumbers[i]]
+
 		if supplierWarehouses[i] != custId['w_id']:
 			remoteCnt+=1
-		print 
 		batch.add(stockUpdateQuery, [adjusted_qty, sYTD[itemNumbers[i]] + qty[i], sOrderCnt[itemNumbers[i]]+1, remoteCnt, itemNumbers[i], supplierWarehouses[i]])
 
 
@@ -138,12 +132,13 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
 	batch.add(insert_order,[order['w_id'], order['d_id'], order['id'], order['c_id'], order['carrier_id'], order['ol_cnt'], order['all_local'], order['entry_d'], order['o_lines']])
 
 	session.execute(batch)
-	print 'Customer: ' + str(custId['w_id']) + ' ' + str(custId['d_id']) + ' ' + str(custId['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
-	print 'w_tax: ' + str(taxes['w_tax']) + ' d_tax: ' + str(taxes['d_tax'])
-	print 'order: ' + str(order['id']) + ' date: ' + str(order['entry_d'])
-	print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount*(1+taxes['w_tax']+taxes['d_tax'])*(1-custInfo['c_discount']))
-	for item in order['o_lines']:
-		print '  ' + str(item._i_id) + ' ' + sName[item._i_id] + ' ' + str(item._supply_w_id) + ' ' + str(item._quantity) + ' ' + str(item._amount) + ' ' + str(stockVol[item._i_id])
+	if PRINT_OUTPUT:
+		print 'Customer: ' + str(custId['w_id']) + ' ' + str(custId['d_id']) + ' ' + str(custId['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
+		print 'w_tax: ' + str(taxes['w_tax']) + ' d_tax: ' + str(taxes['d_tax'])
+		print 'order: ' + str(order['id']) + ' date: ' + str(order['entry_d'])
+		print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount*(1+taxes['w_tax']+taxes['d_tax'])*(1-custInfo['c_discount']))
+		for item in order['o_lines']:
+			print '  ' + str(item._i_id) + ' ' + sName[item._i_id] + ' ' + str(item._supply_w_id) + ' ' + str(item._quantity) + ' ' + str(item._amount) + ' ' + str(stockVol[item._i_id])
 
 
 # helper to convert district number to string.
