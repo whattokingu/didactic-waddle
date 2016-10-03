@@ -8,9 +8,8 @@ import udt
 # @params warehouse number of delivery
 # @params identifier for carrier for deliver
 # @param cluster: an instance of cassandra cluster
-def delivery(wid, carrierid, cluster):
+def delivery(wid, carrierid, session):
 	print "processing delivery transaction"
-	session = cluster.connect(KEYSPACE)
 
 	#getting order info
 	oldestDistrictOrder = []

@@ -3,8 +3,7 @@ from dbconf import KEYSPACE, PRINT_OUTPUT
 from udt import OrderLine
 from cassandra.cluster import Cluster 
 
-def stockLevel(wid, did, threshold, L, cluster):
-	session = cluster.connect(KEYSPACE)
+def stockLevel(wid, did, threshold, L, session):
 	district_res = session.execute(
 		"""
 		SELECT d_next_o_id

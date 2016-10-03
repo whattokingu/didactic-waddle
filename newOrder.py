@@ -12,10 +12,9 @@ import udt
 # @param itemNumbers: warehouse for item. Should be array of size numItems
 # @param itemNumbers: qty for item. Should be array of size numItems
 # @param cluster: cassandra cluster object
-def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, cluster):
+def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, session):
 	print "Processing new order transaction"
 
-	session = cluster.connect(KEYSPACE)
 	#get order number
 	orderNum_res = session.execute(
 		"""

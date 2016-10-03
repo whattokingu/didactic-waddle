@@ -9,9 +9,8 @@ import udt
 # @param custId: a dict with 3 attribs (w_id, d_id, c_id) 
 # @param payment: amount of payment
 # @param cluster: an instance of cassandra cluster
-def custPayment(custId, payment, cluster):
+def custPayment(custId, payment, session):
 	print "processing customer payment"
-	session = cluster.connect(KEYSPACE)
 
 	#get warehouse info
 	warehouseData = dict()

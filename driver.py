@@ -21,6 +21,7 @@ from popular_item import popularItems
 def readTransactions(dirname, file, cluster):
 	timeStart = time.time()
 	xactCount = 0
+	session = cluster.connect(KEYSPACE)
 	try:
 		with open(dirname+ str(file) + '.txt', 'r') as xactfile:
 			print "reading from: " + str(file) + ".txt"
@@ -30,19 +31,19 @@ def readTransactions(dirname, file, cluster):
 				xactType = line[0]
 				print "processing xactType:" +xactType
 				if xactType == 'N':
-					handleNewOrder(line, xactreader, cluster)
+					handleNewOrder(line, xactreader, session)
 				elif xactType == 'P':
-					handlePayment(line, xactreader, cluster)
+					handlePayment(line, xactreader, session)
 				elif xactType == 'D':
-					handleDelivery(line, xactreader, cluster)
+					handleDelivery(line, xactreader, session)
 				elif xactType == 'O':
-					handleOrderStatus(line, xactreader, cluster)
+					handleOrderStatus(line, xactreader, session)
 				elif xactType == 'S':
-					handleStockStatus(line, xactreader, cluster)
+					handleStockStatus(line, xactreader, session)
 				elif xactType == 'I':
-					handlePopularItem(line, xactreader, cluster)
+					handlePopularItem(line, xactreader, session)
 				elif xactType == 'T':
-					handleTopBalance(line, xactreader, cluster)
+					handleTopBalance(line, xactreader, session)
 				else:
 					print "something went wrong."
 				xactCount+=1
@@ -127,7 +128,8 @@ if __name__ == "__main__":
 		dirname+="/"
 	cluster = None
 	if MULTI_CLUSTER:
-		cluster = Cluster(CLUSTE_ADDRESSES[clientNum % 3])
+		# spread the client call to other nodes
+		cluster = Cluster(CLUSTER_ADDRESSES[clientNum % 3])
 	else:
 		cluster = Cluster()
 	print "Client No. " + str(clientNum) + ": starting transactions"

@@ -2,8 +2,7 @@ from cassandra.query import SimpleStatement, named_tuple_factory
 from dbconf import KEYSPACE, PRINT_OUTPUT
 from udt import OrderLine
 
-def orderStatus(w_id, d_id, c_id, cluster):
-	session = cluster.connect(KEYSPACE)
+def orderStatus(w_id, d_id, c_id, session):
 
 	# Get user data and last order asynchronously
 	# to keep chances of screw up due to interleaving transactions to minimum
@@ -13,7 +12,6 @@ def orderStatus(w_id, d_id, c_id, cluster):
 	try:
 		userData = userDataFuture.result().current_rows
 		lastOrder = lastOrderFuture.result()
-		session.shutdown()
 
 		if len(userData)==0:
 			print "Invalid user"

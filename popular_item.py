@@ -5,12 +5,10 @@ from udt import OrderLine
 # We can be sure customer and item won't get deleted or have name changed as these
 # are not part of the transaction sets.
 # So we somehow can achieve serializability without having to do anything for this transaction.
-def popularItems(w_id, d_id, numOrders, cluster):
+def popularItems(w_id, d_id, numOrders, session):
 	print 'Warehouse: %d, District: %d' % (w_id, d_id)
 	print 'No. orders to examine: %d' % (numOrders)
 	print ''
-
-	session = cluster.connect(KEYSPACE)
 
 	orders = session.execute('SELECT o_id, o_c_id, o_entry_d, o_o_lines from "order" WHERE o_w_id=%s AND o_d_id=%s LIMIT %s', [w_id, d_id, numOrders])
 	
@@ -59,7 +57,6 @@ def popularItems(w_id, d_id, numOrders, cluster):
 		for item in iname_future.result():
 			if item.i_id in i_ids:
 				iname_map[item.i_id] = item.i_name
-		session.shutdown()
 
 		item_xact_cnt = {}
 		if PRINT_OUTPUT:
