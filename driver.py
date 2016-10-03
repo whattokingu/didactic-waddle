@@ -8,8 +8,8 @@ from newOrder import newOrder
 from custPayment import custPayment
 from delivery import delivery
 from order_status import orderStatus
-from sotckLevel import stockLevel
-
+from stockLevel import stockLevel
+from popular_item import popularItems
 
 # @params dirname where the xact files reside
 # @params file filename(should be an int) without extension
@@ -70,7 +70,7 @@ def handleOrderStatus(line, xactreader, cluster):
 def handleStockStatus(line, xactreader, cluster):
 	stockLevel(int(line[1]), int(line[2]), int(line[3]), int(line[4]), cluster)
 def handlePopularItem(line, xactreader, cluster):
-	print "popular item"
+	popularItems(int(line[1]), int(line[2]), int(line[3]), cluster)
 def handleTopBalance(line, xactreader, cluster):
 	print "top balance"
 
