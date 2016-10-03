@@ -5,7 +5,6 @@ from udt import OrderLine
 def orderStatus(w_id, d_id, c_id, cluster):
 	session = cluster.connect(KEYSPACE)
 	session.row_factory = named_tuple_factory
-	cluster.register_user_type(KEYSPACE, 'order_line', OrderLine)
 
 	# Get user data and last order asynchronously
 	# to keep chances of screw up due to interleaving transactions to minimum
@@ -31,12 +30,13 @@ def orderStatus(w_id, d_id, c_id, cluster):
 			print 'Order date: %s' % (order.o_entry_d)
 			print 'Carrier ID: %d' % (order.o_carrier_id)
 			print 'Items:'
+			print order.o_o_lines
 			for item in order.o_o_lines:
-				print 'Item ID: %d' % (item.ol_i_id)
-				print 'Supplying warehouse: %d' % (item.ol_supply_w_id)
-				print 'Quantity ordered: %d' % (item.ol_quantity)
-				print 'Total amount: %f' % (item.ol_amount)
-				print 'Delivered on: %s' % (item.ol_delivery_d)
+				print 'Item ID: %d' % (item['ol_i_id'])
+				print 'Supplying warehouse: %d' % (item['ol_supply_w_id'])
+				print 'Quantity ordered: %d' % (item['ol_quantity'])
+				print 'Total amount: %f' % (item['ol_amount'])
+				print 'Delivered on: %s' % (item['ol_delivery_d'])
 				print ''
 	except Exception as e:
 		print 'An error occurred fetching data from database'

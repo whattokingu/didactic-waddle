@@ -7,12 +7,12 @@ class Address(object):
 		self._state = state
 		self._zipcode = zipcode
 
-	def __init__(self, **kwargs):
-		self._street_1 = kwargs.get('street_1')
-		self._street_2 = kwargs.get('street_2')
-		self._city = kwargs.get('city')
-		self._state = kwargs.get('state')
-		self._zipcode = kwargs.get('zipcode')
+	# def __init__(self, **kwargs):
+	# 	self._street_1 = kwargs.get('street_1')
+	# 	self._street_2 = kwargs.get('street_2')
+	# 	self._city = kwargs.get('city')
+	# 	self._state = kwargs.get('state')
+	# 	self._zipcode = kwargs.get('zipcode')
 
 	@property
 	def street_1(self):
@@ -64,13 +64,13 @@ class OrderLine(object):
 		self._quantity = quantity
 		self._dist_info = dist_info
 
-	def __init__(self, **kwargs):
-		self._i_id = kwargs.get('ol_i_id')
-		self._delivery_date = kwargs.get('ol_delivery_d')
-		self._amount = kwargs.get('ol_amount')
-		self._supply_w_id = kwargs.get('ol_supply_w_id')
-		self._quantity = kwargs.get('ol_quantity')
-		self._dist_info = kwargs.get('ol_dist_info')
+	# def __init__(self, **kwargs):
+	# 	self._i_id = kwargs.get('ol_i_id')
+	# 	self._delivery_date = kwargs.get('ol_delivery_d')
+	# 	self._amount = kwargs.get('ol_amount')
+	# 	self._supply_w_id = kwargs.get('ol_supply_w_id')
+	# 	self._quantity = kwargs.get('ol_quantity')
+	# 	self._dist_info = kwargs.get('ol_dist_info')
 
 	@property
 	def ol_i_id(self):

@@ -2,6 +2,7 @@ from cassandra.cluster import Cluster
 from dbconf import KEYSPACE, CONSISTENCY_LEVEL
 from cassandra.query import BatchStatement, SimpleStatement
 from datetime import datetime
+from decimal import *
 import time
 import udt
 
@@ -32,10 +33,9 @@ def custPayment(custId, payment, cluster):
 		FROM district
 		WHERE d_w_id = %s AND d_id = %s
 		""",
-		(custId['w_id'], cust['d_id'])
+		(custId['w_id'], custId['d_id'])
 		)
 	for row in district_res:
-		print row
 		districtData['d_ytd'] = row.d_ytd
 		districtData['d_address'] = row.d_address
 	#get customer info
@@ -50,7 +50,6 @@ def custPayment(custId, payment, cluster):
 		(custId['w_id'], custId['d_id'], custId['c_id'])
 		)
 	for row in cust_res:
-		print row
 		custInfo['c_first'] = row.c_first
 		custInfo['c_middle'] = row.c_middle
 		custInfo['c_last'] = row.c_last
