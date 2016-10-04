@@ -37,11 +37,10 @@ def stockLevel(wid, did, threshold, L, session):
 	stocklevel_res = session.execute(stocklevelquery, [wid, stockId])
 	
 	for row in stocklevel_res:
-		print row
 		if row.s_quantity < threshold:
 			count+=1
 	if PRINT_OUTPUT:
-		print count
+		print "number of stock below threshold: " + str(count)
 # cluster = Cluster()
 # session = cluster.connect(KEYSPACE)
 # stockLevel(3,3,100,10, session)
