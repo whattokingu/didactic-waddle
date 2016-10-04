@@ -1,5 +1,5 @@
 from cassandra.query import SimpleStatement, named_tuple_factory
-from dbconf import KEYSPACE, LOGGING_LEVEL
+from dbconf import KEYSPACE, LOGGING_LEVEL, PRINT_OUTPUT
 from udt import OrderLine
 import logging
 

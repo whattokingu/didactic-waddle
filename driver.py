@@ -130,10 +130,10 @@ if __name__ == "__main__":
 	if not dirname.endswith("/"):
 		dirname+="/"	
 	cluster = Cluster()
-	print "Client No. " + str(clientNum) + ": starting transactions")
-	msg = readTransactions(dirname, clientNum , cluster)		
-	print "Client No. " + str(clientNum) + ": " + msg)
-	print "Client No. " + str(clientNum) + ": ending transactions")
+	print "Client No. " + str(clientNum) + ": starting transactions"
+	msg = readTransactions(dirname, clientNum , cluster)	
+	print "Client No. " + str(clientNum) + ": " + msg
+	print "Client No. " + str(clientNum) + ": ending transactions"
 	exit()
 
 
