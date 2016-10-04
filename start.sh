@@ -16,7 +16,7 @@ else
 	echo "changing keyspace replication to $replication on cassandra node"
 	cqlsh -e "alter keyspace cs4224 with replication = {'class': 'SimpleStrategy', replication_factor' : $replication}"
 	echo "loading directory"
-	python load_data.py $datadirname
+	python load_data.py $datadirname ;
 
 	for i in $(seq 0 $(($numclients-1))); do
 		echo "Starting client " $i
