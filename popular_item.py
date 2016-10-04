@@ -77,4 +77,4 @@ def popularItems(w_id, d_id, numOrders, session):
 	except Exception as e:
 		print 'Error fetching data from database'
 		print str(e)
-		session.shutdown()
+		

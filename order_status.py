@@ -28,11 +28,11 @@ def orderStatus(w_id, d_id, c_id, session):
 				print 'Items:'
 				print order.o_o_lines
 				for item in order.o_o_lines:
-					print 'Item ID: %d' % (item['ol_i_id'])
-					print 'Supplying warehouse: %d' % (item['ol_supply_w_id'])
-					print 'Quantity ordered: %d' % (item['ol_quantity'])
-					print 'Total amount: %f' % (item['ol_amount'])
-					print 'Delivered on: %s' % (item['ol_delivery_d'])
+					print 'Item ID: %d' % (item.ol_i_id)
+					print 'Supplying warehouse: %d' % (item.ol_supply_w_id)
+					print 'Quantity ordered: %d' % (item.ol_quantity)
+					print 'Total amount: %f' % (item.ol_amount)
+					print 'Delivered on: %s' % (item.ol_delivery_d)
 					print ''
 	except Exception as e:
 		print 'An error occurred fetching data from database'

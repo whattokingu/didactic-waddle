@@ -14,6 +14,7 @@ from delivery import delivery
 from order_status import orderStatus
 from stockLevel import stockLevel
 from popular_item import popularItems
+from topbalance2 import topbalance
 
 # @params dirname where the xact files reside
 # @params file filename(should be an int) without extension
@@ -58,7 +59,7 @@ def readTransactions(dirname, file, cluster):
 	return "transaction Stats: {0} transactions in {1} ms".format(xactCount, (timeEnd - timeStart)*1000.0)
 
 
-def handleNewOrder(line, xactreader, cluster):
+def handleNewOrder(line, xactreader, session):
 	custId = dict()
 	custId['c_id'] = int(line[1])
 	custId['w_id'] = int(line[2])
@@ -72,26 +73,24 @@ def handleNewOrder(line, xactreader, cluster):
 		itemId.append(int(ol_line[0]))
 		supplyWarehouse.append(int(ol_line[1]))
 		qty.append(int(ol_line[2]))
-	newOrder(custId, numItems, itemId, supplyWarehouse, qty, cluster)
+	newOrder(custId, numItems, itemId, supplyWarehouse, qty, session)
 
-def handlePayment(line, xactreader, cluster):
+def handlePayment(line, xactreader, session):
 	custId = dict()
 	custId['w_id'] = int(line[1])
 	custId['d_id'] = int(line[2])
 	custId['c_id'] = int(line[3])
-	custPayment(custId, Decimal(line[4]), cluster)
-
-def handleDelivery(line, xactreader, cluster):
-	delivery(int(line[1]), int(line[2]), cluster)
-
-def handleOrderStatus(line, xactreader, cluster):
-	orderStatus(int(line[1]), int(line[2]), int(line[3]), cluster)
-def handleStockStatus(line, xactreader, cluster):
-	stockLevel(int(line[1]), int(line[2]), int(line[3]), int(line[4]), cluster)
-def handlePopularItem(line, xactreader, cluster):
-	popularItems(int(line[1]), int(line[2]), int(line[3]), cluster)
-def handleTopBalance(line, xactreader, cluster):
-	print "top balance"
+	custPayment(custId, Decimal(line[4]), session)
+def handleDelivery(line, xactreader, session):
+	delivery(int(line[1]), int(line[2]), session)
+def handleOrderStatus(line, xactreader, session):
+	orderStatus(int(line[1]), int(line[2]), int(line[3]), session)
+def handleStockStatus(line, xactreader, session):
+	stockLevel(int(line[1]), int(line[2]), int(line[3]), int(line[4]), session)
+def handlePopularItem(line, xactreader, session):
+	popularItems(int(line[1]), int(line[2]), int(line[3]), session)
+def handleTopBalance(line, xactreader, session):
+	topbalance(session)
 
 class itewrapper(object):
   def __init__(self, it):

@@ -56,6 +56,9 @@ c_data text,
 primary key ((c_w_id, c_d_id), c_id)
 );
 
+CREATE INDEX customer_c_balance_id on cs4224."customer" (c_balance);
+
+
 CREATE TABLE IF NOT EXISTS cs4224.item (
 i_id int primary key,
 i_name text,
