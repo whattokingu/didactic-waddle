@@ -131,5 +131,6 @@ if __name__ == "__main__":
 	msg = readTransactions(dirname, clientNum , cluster)		
 	print "Client No. " + str(clientNum) + ": " + msg
 	print "Client No. " + str(clientNum) + ": ending transactions"
+	exit()
 
 
