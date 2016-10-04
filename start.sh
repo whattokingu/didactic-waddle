@@ -18,8 +18,11 @@ else
 	echo "loading directory"
 	python load_data.py $datadirname ;
 
-	for i in $(seq 0 $(($numclients-1))); do
+	for i in $(seq 0 $(($numclients-2))); do
 		echo "Starting client " $i
 		python driver.py $xactdirname $i &
 	done
+	python driver.py $xactdirname $(($numclients-1)) ;
+	wait $!
+	sleep 5
 fi
