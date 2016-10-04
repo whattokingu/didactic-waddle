@@ -23,10 +23,7 @@ def topbalance(session):
 	for row in top_bal:
 		district_set.add(row.c_d_id)
 		warehouse_set.add(row.c_w_id)
-	print "warehouse:"
-	print warehouse_set
-	print "district"
-	print district_set
+	
 	warehouse_query = session.prepare(
 		"""
 		SELECT w_id, w_name
@@ -38,8 +35,7 @@ def topbalance(session):
 	warehouse_dict = dict()
 	for row in warehouse_name_res:
 		warehouse_dict[row.w_id] = row.w_name
-	print "warehouse"
-	print warehouse_dict
+	
 	district_query = session.prepare(
 		"""
 		SELECT d_w_id, d_id, d_name
@@ -51,13 +47,12 @@ def topbalance(session):
 	for row in district_name_res:
 		district_dict[(row.d_w_id, row.d_id)] = row.d_name
 
-	print "district"
-	print district_dict
-	for cust in top_bal:
-		print 'Customer %s %s %s' % (cust.c_first, cust.c_middle, cust.c_last)
-		print 'Outstanding Balance: %d' % (cust.c_balance)
-		print 'Warehouse Name: %s' % (warehouse_dict[cust.c_w_id]) 
-		print 'District Name: %s' % (district_dict[(cust.c_w_id, cust.c_d_id)])
+	if PRINT_OUTPUT:
+		for cust in top_bal:
+			print 'Customer %s %s %s' % (cust.c_first, cust.c_middle, cust.c_last)
+			print 'Outstanding Balance: %d' % (cust.c_balance)
+			print 'Warehouse Name: %s' % (warehouse_dict[cust.c_w_id]) 
+			print 'District Name: %s' % (district_dict[(cust.c_w_id, cust.c_d_id)])
 
 # cluster = Cluster()
 # session = cluster.connect(KEYSPACE)
