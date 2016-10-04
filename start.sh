@@ -22,6 +22,7 @@ else
 		echo "Starting client " $i
 		python driver.py $xactdirname $i &
 	done
+	echo "Starting client " $(($numclients-1))
 	python driver.py $xactdirname $(($numclients-1)) ;
 	wait $!
 	sleep 5
