@@ -1,9 +1,13 @@
 from cassandra.query import SimpleStatement, named_tuple_factory
-from dbconf import KEYSPACE, PRINT_OUTPUT
+from dbconf import KEYSPACE, LOGGING_LEVEL, PRINT_OUTPUT
 from udt import OrderLine
 from cassandra.cluster import Cluster 
+import logging
 
 def stockLevel(wid, did, threshold, L, session):
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
+	logger.info("processing stock level")
 	district_res = session.execute(
 		"""
 		SELECT d_next_o_id

@@ -1,9 +1,10 @@
 from cassandra.cluster import Cluster 
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL, PRINT_OUTPUT
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL, PRINT_OUTPUT
 from cassandra.query import BatchStatement
 from datetime import datetime
 import time
 import udt
+import logging
 
 
 # @param custId: a dict with 3 attribs (w_id, d_id, c_id)
@@ -13,7 +14,9 @@ import udt
 # @param itemNumbers: qty for item. Should be array of size numItems
 # @param cluster: cassandra cluster object
 def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, session):
-	print "Processing new order transaction"
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
+	logger.info("Processing new order transaction")
 
 	#get order number
 	orderNum_res = session.execute(

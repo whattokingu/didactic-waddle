@@ -1,9 +1,12 @@
 from cassandra.cluster import Cluster
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL, PRINT_OUTPUT
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL, PRINT_OUTPUT
+import logging
 
 
 def topbalance(session):
-	print "Getting customers with highest balances"
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
+	logger.info("Getting customers with highest balances")
 	balance_res = session.execute('select c_balance from customer');
 	sortedBalance = list(sorted(balance_res, key = lambda c: -c.c_balance))
 	balance = sortedBalance[9].c_balance
@@ -46,8 +49,7 @@ def topbalance(session):
 	district_dict = dict()
 	for row in district_name_res:
 		district_dict[(row.d_w_id, row.d_id)] = row.d_name
-
-	if PRINT_OUTPUT:
+	if PRINT_OUTPUT:	
 		for cust in top_bal:
 			print 'Customer %s %s %s' % (cust.c_first, cust.c_middle, cust.c_last)
 			print 'Outstanding Balance: %d' % (cust.c_balance)

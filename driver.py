@@ -3,10 +3,11 @@ import csv
 import threading
 import time
 import traceback
+import logging
 from decimal import Decimal
 from datetime import datetime
 from cassandra.cluster import Cluster
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL
 
 from newOrder import newOrder
 from custPayment import custPayment
@@ -23,14 +24,15 @@ def readTransactions(dirname, file, cluster):
 	timeStart = time.time()
 	xactCount = 0
 	session = cluster.connect(KEYSPACE)
+	file = dirname + str(file) + '.txt'
+	logger.info("reading from: " + str(file) + ".txt")
 	try:
-		with open(dirname+ str(file) + '.txt', 'r') as xactfile:
-			print "reading from: " + str(file) + ".txt"
+		with open(file, 'r') as xactfile:
 			xactreader = itewrapper(csv.reader(xactfile, delimiter=','))
 			while xactreader.hasnext():
 				line = xactreader.next()
 				xactType = line[0]
-				print "processing xactType:" +xactType
+				logger.info("processing xactType:" +xactType)
 				if xactType == 'N':
 					handleNewOrder(line, xactreader, session)
 				elif xactType == 'P':
@@ -46,11 +48,11 @@ def readTransactions(dirname, file, cluster):
 				elif xactType == 'T':
 					handleTopBalance(line, xactreader, session)
 				else:
-					print "something went wrong."
+					logger.warning("something went wrong.")
 				xactCount+=1
 	except Exception as e:
-		print "An Error has occured:"
-		print e
+		logger.error("An Error has occured:")
+		logger.error(e)
 		exc_type, exc_value, exc_traceback = sys.exc_info()
 		traceback.print_exc()
 		timeEnd = time.time()
@@ -114,22 +116,24 @@ class itewrapper(object):
 
 
 if __name__ == "__main__":
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
 	if len(sys.argv)<3:
-		print "Please specify a transaction input folder"
-		print "please specify client number, e.g., 2"
-		print "e.g. python driver.py <folder> <fileNum>"
+		logger.info("Please specify a transaction input folder")
+		logger.info("please specify client number, e.g., 2")
+		logger.info("e.g. python driver.py <folder> <fileNum>")
 		exit()
 	dirname = sys.argv[1]
 	clientNum = int(sys.argv[2])
-	print "processing transactions: "
+	logger.info("processing transactions: ")
 
 	if not dirname.endswith("/"):
 		dirname+="/"	
 	cluster = Cluster()
-	print "Client No. " + str(clientNum) + ": starting transactions"
+	print "Client No. " + str(clientNum) + ": starting transactions")
 	msg = readTransactions(dirname, clientNum , cluster)		
-	print "Client No. " + str(clientNum) + ": " + msg
-	print "Client No. " + str(clientNum) + ": ending transactions"
+	print "Client No. " + str(clientNum) + ": " + msg)
+	print "Client No. " + str(clientNum) + ": ending transactions")
 	exit()
 
 

@@ -1,14 +1,15 @@
 from cassandra.query import named_tuple_factory
-from dbconf import KEYSPACE, PRINT_OUTPUT
+from dbconf import KEYSPACE, LOGGING_LEVEL, PRINT_OUTPUT
 from udt import OrderLine
+import logging
 
 # We can be sure customer and item won't get deleted or have name changed as these
 # are not part of the transaction sets.
 # So we somehow can achieve serializability without having to do anything for this transaction.
 def popularItems(w_id, d_id, numOrders, session):
-	print 'Warehouse: %d, District: %d' % (w_id, d_id)
-	print 'No. orders to examine: %d' % (numOrders)
-	print ''
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
+	logger.info("processing popular items")
 
 	orders = session.execute('SELECT o_id, o_c_id, o_entry_d, o_o_lines from "order" WHERE o_w_id=%s AND o_d_id=%s LIMIT %s', [w_id, d_id, numOrders])
 	
@@ -71,10 +72,9 @@ def popularItems(w_id, d_id, numOrders, session):
 					item_xact_cnt[item['id']]+=1
 					print ''
 			print ''
-
 			for i_id, num_xact in item_xact_cnt.items():
 				print '%s is in %f%% of %d orders' % (iname_map[i_id], num_xact*100/float(numOrders), numOrders)
 	except Exception as e:
-		print 'Error fetching data from database'
-		print str(e)
+		logging.error('Error fetching data from database')
+		logging.error(str(e))
 		

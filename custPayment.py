@@ -1,16 +1,19 @@
 from cassandra.cluster import Cluster 
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL, PRINT_OUTPUT
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL, PRINT_OUTPUT
 from cassandra.query import BatchStatement, SimpleStatement
 from datetime import datetime
 from decimal import *
 import time
 import udt
+import logging
 
 # @param custId: a dict with 3 attribs (w_id, d_id, c_id) 
 # @param payment: amount of payment
 # @param cluster: an instance of cassandra cluster
 def custPayment(custId, payment, session):
-	print "processing customer payment"
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
+	logger.info('processing customer payment')
 
 	#get warehouse info
 	warehouseData = dict()
@@ -105,6 +108,7 @@ def custPayment(custId, payment, session):
 def formatAddress(address):
 		return address.street_1 + '\n' + address.street_2 + '\n' + address.city + ', ' + address.state + '\n' + str(address.zipcode)
 # cluster = Cluster()
+# cluster = cluster.connect(KEYSPACE)
 # cust = dict()
 # cust['w_id'] = 5
 # cust['d_id'] = 9

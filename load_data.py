@@ -8,11 +8,12 @@ from cassandra import ConsistencyLevel
 from cassandra.query import SimpleStatement, BatchStatement
 from dbconf import KEYSPACE, CONSISTENCY_LEVEL
 import udt
+import logging
 
 # Cleans all data from DB
 # @param cluster The cluster object used to connect to database
 def cleanDb(cluster):
-	print "Cleaning DB data"
+	logging.info("Cleaning DB data")
 	session = cluster.connect(KEYSPACE)
 
 	# To be updated with other tables that needs cleaning up
@@ -30,7 +31,7 @@ def cleanDb(cluster):
 def populateWarehouses(dirname, cluster):
 	if not dirname.endswith("/"):
 		dirname+="/"
-	print "Loading warehouse data from %s" % (dirname)
+	logging.info("Loading warehouse data from %s" % (dirname))
 
 	# Read warehouse data from CSV
 	warehouses = []
@@ -52,7 +53,7 @@ def populateWarehouses(dirname, cluster):
 def populateDistricts(dirname, cluster):
 	if not dirname.endswith('/'):
 		dirname+='/'
-	print "Loading district data from %s" % (dirname)
+	logging.info("Loading district data from %s" % (dirname))
 
 	# Read district data from CSV
 	districts = []
@@ -92,7 +93,7 @@ def populateDistricts(dirname, cluster):
 def populateCustomers(dirname, cluster):
 	if not dirname.endswith("/"):
 		dirname+="/"
-	print "Loading customer data from %s" % (dirname)
+	logging.info("Loading customer data from %s" % (dirname))
 
 	# Read customer data from CSV
 	customers = []
@@ -135,7 +136,7 @@ def populateCustomers(dirname, cluster):
 def populateItems(dirname, cluster):
 	if not dirname.endswith('/'):
 		dirname+='/'
-	print "Loading item data from %s" % (dirname)
+	logging.info("Loading item data from %s" % (dirname))
 
 	# Load item data from CSV
 	items = []
@@ -159,7 +160,7 @@ def populateItems(dirname, cluster):
 def populateOrders(dirname, cluster):
 	if not dirname.endswith('/'):
 		dirname+='/'
-	print "Loading order and order line data from %s" % (dirname)
+	logging.info("Loading order and order line data from %s" % (dirname))
 
 	# Load order data from CSV
 	orders = []
@@ -221,7 +222,7 @@ def populateOrders(dirname, cluster):
 def populateStocks(dirname, cluster):
 	if not dirname.endswith('/'):
 		dirname+='/'
-	print "Loading stock data from %s" % (dirname)
+	logging.info("Loading stock data from %s" % (dirname))
 
 	# Load stock data from CSV
 	stocks = []
@@ -264,8 +265,10 @@ def populateStocks(dirname, cluster):
 	session.shutdown()
 
 if __name__ == "__main__":
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=logging.INFO)
 	if len(sys.argv)<2:
-		print "Please specify a data input folder"
+		logging.info("Please specify a data input folder")
 		exit()
 
 	dirname = sys.argv[1]

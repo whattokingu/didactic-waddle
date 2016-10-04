@@ -1,15 +1,18 @@
 from cassandra.cluster import Cluster 
-from dbconf import KEYSPACE, CONSISTENCY_LEVEL, PRINT_OUTPUT
+from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL
 from cassandra.query import BatchStatement, SimpleStatement
 from datetime import datetime
 import time
 import udt
+import logging
 
 # @params warehouse number of delivery
 # @params identifier for carrier for deliver
 # @param cluster: an instance of cassandra cluster
 def delivery(wid, carrierid, session):
-	print "processing delivery transaction"
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
+	logger.info("processing delivery transaction")
 
 	#getting order info
 	oldestDistrictOrder = []

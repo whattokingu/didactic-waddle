@@ -1,9 +1,12 @@
 from cassandra.query import SimpleStatement, named_tuple_factory
-from dbconf import KEYSPACE, PRINT_OUTPUT
+from dbconf import KEYSPACE, LOGGING_LEVEL
 from udt import OrderLine
+import logging
 
 def orderStatus(w_id, d_id, c_id, session):
-
+	logger = logging.getLogger(__name__)
+	logging.basicConfig(level=LOGGING_LEVEL)
+	logger.info("processing order status")
 	# Get user data and last order asynchronously
 	# to keep chances of screw up due to interleaving transactions to minimum
 	userDataFuture = session.execute_async('SELECT c_first, c_middle, c_last, c_balance FROM customer WHERE c_w_id=%s AND c_d_id=%s AND c_id=%s', [w_id, d_id, c_id])
@@ -14,7 +17,7 @@ def orderStatus(w_id, d_id, c_id, session):
 		lastOrder = lastOrderFuture.result()
 
 		if len(userData)==0:
-			print "Invalid user"
+			logger.error("Invalid user")
 			session.shutdown()
 			return
 
@@ -35,6 +38,6 @@ def orderStatus(w_id, d_id, c_id, session):
 					print 'Delivered on: %s' % (item.ol_delivery_d)
 					print ''
 	except Exception as e:
-		print 'An error occurred fetching data from database'
-		print str(e)
+		logger.error('An error occurred fetching data from database')
+		logger.error(str(e))
 		session.shutdown()
