@@ -58,6 +58,14 @@ primary key ((c_w_id, c_d_id), c_id)
 
 CREATE INDEX customer_c_balance_id on cs4224."customer" (c_balance);
 
+CREATE TABLE IF NOT EXISTS cs4224.customer_balance (
+c_w_id int,
+c_d_id int,
+c_id int, 
+c_balance
+primary key((c_w_id, c,d_id, c_id), c_balance)
+)with clustering order by (c_balance desc);
+
 
 CREATE TABLE IF NOT EXISTS cs4224.item (
 i_id int primary key,
