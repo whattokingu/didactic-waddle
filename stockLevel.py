@@ -1,4 +1,4 @@
-from cassandra.query import SimpleStatement, named_tuple_factory
+from cassandra.query import SimpleStatement, named_tuple_factory, ValueSequence
 from dbconf import KEYSPACE, LOGGING_LEVEL, PRINT_OUTPUT
 from udt import OrderLine
 from cassandra.cluster import Cluster 
@@ -8,43 +8,37 @@ def stockLevel(wid, did, threshold, L, session):
 	logger = logging.getLogger(__name__)
 	logging.basicConfig(level=LOGGING_LEVEL)
 	logger.info("processing stock level")
-	district_res = session.execute(
-		"""
-		SELECT d_next_o_id
-		FROM district
-		WHERE d_id=%s AND d_w_id=%s
-		"""
-		,(did, wid))
-	orderNum = 0
-	for row in district_res:
-		orderNum = row.d_next_o_id
+
+	# Orders partitioned by (w_id, d_id) and clustered by o_id in DESC order
+	# So 1 query on correct partition without ORDER BY and applying LIMIT is enough
 	orderlines_res = session.execute(
 		"""
 		SELECT o_o_lines
 		FROM "order"
-		WHERE o_w_id = %s AND o_d_id = %s AND o_id < %s AND o_id >= %s
+		WHERE o_w_id = %s AND o_d_id = %s LIMIT %s
 		""",
-		(wid, did, orderNum, orderNum - L))
+		(wid, did, L))
 	stockId = set()
 	for row in orderlines_res:
 		for item in row.o_o_lines:
 			stockId.add(item.ol_i_id)
 
-	stocklevelquery = session.prepare(
+	stocklevel_res = session.execute(
 		"""
 		SELECT s_quantity, s_i_id
 		FROM stock
-		WHERE s_w_id = ? and s_i_id in ?
-		""")
+		WHERE s_w_id = %s and s_i_id in %s
+		""",
+		[wid, ValueSequence(stockId)])
 
+	# Count stock items below threshold quantity
 	count = 0
-	stocklevel_res = session.execute(stocklevelquery, [wid, stockId])
-	
 	for row in stocklevel_res:
 		if row.s_quantity < threshold:
 			count+=1
 	if PRINT_OUTPUT:
 		print "number of stock below threshold: " + str(count)
+
 # cluster = Cluster()
 # session = cluster.connect(KEYSPACE)
 # stockLevel(3,3,100,10, session)
