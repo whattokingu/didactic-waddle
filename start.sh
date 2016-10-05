@@ -1,14 +1,15 @@
 #!/bin/bash
 
-if [ "$#" -ne 3 ];
+if [ "$#" -ne 4 ];
 then
-	echo "wrong number of arguments. Correct call: start.sh <dirname> <numclients> <replicationfactor>"
+	echo "wrong number of arguments. Correct call: start.sh <dirname> <numclients> <replicationfactor> <logfile>"
 else
 
 	datadirname=$1-data
 	xactdirname=$1-xact-revised-b
 	numclients=$2
 	replication=$3
+	logfile=$4
 	echo "data directory: " $datadirname
 	echo "xact directory: " $xactdirname
 	echo "starting drivers with number of clients: " $numclients
@@ -20,10 +21,10 @@ else
 
 	for i in $(seq 0 $(($numclients-2))); do
 		echo "Starting client " $i
-		python driver.py $xactdirname $i &
+		python driver.py $xactdirname $i $logfile&
 	done
 	echo "Starting client " $(($numclients-1))
-	python driver.py $xactdirname $(($numclients-1)) ;
+	python driver.py $xactdirname $(($numclients-1)) $logfile ;
 	wait $!
 	sleep 5
 fi

@@ -118,22 +118,30 @@ class itewrapper(object):
 if __name__ == "__main__":
 	logger = logging.getLogger(__name__)
 	logging.basicConfig(level=LOGGING_LEVEL)
-	if len(sys.argv)<3:
+	if len(sys.argv)<4:
 		logger.info("Please specify a transaction input folder")
 		logger.info("please specify client number, e.g., 2")
-		logger.info("e.g. python driver.py <folder> <fileNum>")
+		logger.info("e.g. python driver.py <folder> <fileNum> <logfile>")
 		exit()
 	dirname = sys.argv[1]
 	clientNum = int(sys.argv[2])
+	logfile=sys.argv[3]
 	logger.info("processing transactions: ")
 
 	if not dirname.endswith("/"):
 		dirname+="/"	
 	cluster = Cluster()
-	print "Client No. " + str(clientNum) + ": starting transactions"
+	fh = logging.FileHandler(logfile)
+	fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+	logger.addHandler(fh)
+	logger.setLevel(logging.INFO)
+	logger.info("Client No. " + str(clientNum) + ": starting transactions")
+	logger.setLevel(LOGGING_LEVEL)
 	msg = readTransactions(dirname, clientNum , cluster)	
-	print "Client No. " + str(clientNum) + ": " + msg
-	print "Client No. " + str(clientNum) + ": ending transactions"
+	logger.setLevel(logging.INFO)
+	logger.info("Client No. " + str(clientNum) + ": " + msg)
+	logger.info("Client No. " + str(clientNum) + ": ending transactions")
+	logger.setLevel(LOGGING_LEVEL)
 	exit()
 
 
