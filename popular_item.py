@@ -21,7 +21,6 @@ def popularItems(w_id, d_id, numOrders, session):
 
 	# No distinct customer implies no order
 	if len(distinct_customers)==0:
-		session.shutdown()
 		return
 
 	# Use async queries as the next computation step may take quite a while
