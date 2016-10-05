@@ -23,6 +23,7 @@ def cleanDb(cluster):
 	session.execute(SimpleStatement('TRUNCATE item'))
 	session.execute(SimpleStatement('TRUNCATE district'))
 	session.execute(SimpleStatement('TRUNCATE warehouse'))
+	session.execute(SimpleStatement('TRUNCATE customer_balance'))
 
 	session.shutdown()
 
