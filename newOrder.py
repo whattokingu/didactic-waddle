@@ -18,6 +18,10 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, session):
 	logging.basicConfig(level=LOGGING_LEVEL)
 	logger.info("Processing new order transaction")
 
+	# Async queries
+	taxes_future = session.execute_async('SELECT d_tax, d_w_tax FROM district WHERE d_id = %s AND d_w_id = %s', [custId['d_id'], custId['w_id']])
+	custDisc_future = session.execute_async('SELECT c_discount, c_last, c_credit FROM customer WHERE c_w_id = %s AND c_d_id = %s AND c_id = %s', [custId['w_id'], custId['d_id'], custId['c_id']])
+
 	#get order number
 	orderNum_res = session.execute(
 		"""
@@ -31,33 +35,33 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, session):
 	for row in orderNum_res:
 		orderNum = row.d_next_o_id
 	#get taxes
-	taxes = dict()
-	taxes_res = session.execute(
-		"""
-		SELECT d_tax, d_w_tax
-		FROM district
-		WHERE d_id = %s AND d_w_id = %s
-		""",
-		(custId['d_id'], custId['w_id'])
-	)
-	for row in taxes_res:
-		taxes['w_tax'] = row.d_w_tax
-		taxes['d_tax'] = row.d_tax
+	# taxes = dict()
+	# taxes_res = session.execute(
+	# 	"""
+	# 	SELECT d_tax, d_w_tax
+	# 	FROM district
+	# 	WHERE d_id = %s AND d_w_id = %s
+	# 	""",
+	# 	(custId['d_id'], custId['w_id'])
+	# )
+	# for row in taxes_res:
+	# 	taxes['w_tax'] = row.d_w_tax
+	# 	taxes['d_tax'] = row.d_tax
 
 	#get cust info	
-	custDisc_res = session.execute(
-		"""
-		SELECT c_discount, c_last, c_credit
-		FROM customer
-		WHERE c_w_id = %s AND c_d_id = %s AND c_id = %s
-		""",
-		(custId['w_id'], custId['d_id'], custId['c_id'])
-		)
-	custInfo = dict()
-	for row in custDisc_res:
-		custInfo['c_discount'] = row.c_discount
-		custInfo['c_last'] = row.c_last
-		custInfo['c_credit'] = row.c_credit
+	# custDisc_res = session.execute(
+	# 	"""
+	# 	SELECT c_discount, c_last, c_credit
+	# 	FROM customer
+	# 	WHERE c_w_id = %s AND c_d_id = %s AND c_id = %s
+	# 	""",
+	# 	(custId['w_id'], custId['d_id'], custId['c_id'])
+	# 	)
+	# custInfo = dict()
+	# for row in custDisc_res:
+	# 	custInfo['c_discount'] = row.c_discount
+	# 	custInfo['c_last'] = row.c_last
+	# 	custInfo['c_credit'] = row.c_credit
 
 
 	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
@@ -133,14 +137,30 @@ def newOrder(custId, numItems, itemNumbers, supplierWarehouses, qty, session):
 	insert_order = session.prepare('INSERT INTO "order" (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d, o_o_lines) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
 	batch.add(insert_order,[order['w_id'], order['d_id'], order['id'], order['c_id'], order['carrier_id'], order['ol_cnt'], order['all_local'], order['entry_d'], order['o_lines']])
 
-	session.execute(batch)
-	if PRINT_OUTPUT:
-		print 'Customer: ' + str(custId['w_id']) + ' ' + str(custId['d_id']) + ' ' + str(custId['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
-		print 'w_tax: ' + str(taxes['w_tax']) + ' d_tax: ' + str(taxes['d_tax'])
-		print 'order: ' + str(order['id']) + ' date: ' + str(order['entry_d'])
-		print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount*(1+taxes['w_tax']+taxes['d_tax'])*(1-custInfo['c_discount']))
-		for item in order['o_lines']:
-			print '  ' + str(item._i_id) + ' ' + sName[item._i_id] + ' ' + str(item._supply_w_id) + ' ' + str(item._quantity) + ' ' + str(item._amount) + ' ' + str(stockVol[item._i_id])
+	try:
+		# Get taxes
+		taxes = {}
+		for row in taxes_future.result():
+			taxes['w_tax'] = row.d_w_tax
+			taxes['d_tax'] = row.d_tax
+
+		# Get customer info
+		custInfo = {}
+		for row in custDisc_future.result():
+			custInfo['c_discount'] = row.c_discount
+			custInfo['c_last'] = row.c_last
+			custInfo['c_credit'] = row.c_credit
+
+		session.execute(batch)
+		if PRINT_OUTPUT:
+			print 'Customer: ' + str(custId['w_id']) + ' ' + str(custId['d_id']) + ' ' + str(custId['c_id']) + ' ' + str(custInfo['c_last']) + ' ' + str(custInfo['c_credit']) + ' ' + str(custInfo['c_discount'])
+			print 'w_tax: ' + str(taxes['w_tax']) + ' d_tax: ' + str(taxes['d_tax'])
+			print 'order: ' + str(order['id']) + ' date: ' + str(order['entry_d'])
+			print 'numItems: ' + str(numItems) + ' total amount: ' + str(totalAmount*(1+taxes['w_tax']+taxes['d_tax'])*(1-custInfo['c_discount']))
+			for item in order['o_lines']:
+				print '  ' + str(item._i_id) + ' ' + sName[item._i_id] + ' ' + str(item._supply_w_id) + ' ' + str(item._quantity) + ' ' + str(item._amount) + ' ' + str(stockVol[item._i_id])
+	except Exception as e:
+		print str(e)
 
 
 # helper to convert district number to string.
