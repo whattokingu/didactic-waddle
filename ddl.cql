@@ -49,14 +49,12 @@ c_credit text,
 c_credit_lim decimal,
 c_discount decimal,
 c_ytd_payment decimal,
-c_balance decimal,
 c_payment_cnt int,
 c_delivery_cnt int,
 c_data text,
 primary key ((c_w_id, c_d_id), c_id)
 );
 
-CREATE INDEX customer_c_balance_id on cs4224."customer" (c_balance);
 
 CREATE TABLE IF NOT EXISTS cs4224.customer_balance (
 c_w_id int,
