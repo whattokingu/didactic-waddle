@@ -77,8 +77,7 @@ o_ol_cnt int,
 o_all_local boolean,
 o_entry_d timestamp,
 o_o_lines list<frozen<order_line>>,
-primary key ((o_w_id, o_d_id), o_id))
-with clustering order by (o_id desc);
+primary key ((o_w_id, o_d_id), o_id));
 
 CREATE INDEX order_o_c_id on cs4224."order" (o_c_id);
 

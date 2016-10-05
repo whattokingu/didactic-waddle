@@ -11,7 +11,7 @@ def popularItems(w_id, d_id, numOrders, session):
 	logging.basicConfig(level=LOGGING_LEVEL)
 	logger.info("processing popular items")
 
-	orders = session.execute('SELECT o_id, o_c_id, o_entry_d, o_o_lines from "order" WHERE o_w_id=%s AND o_d_id=%s LIMIT %s', [w_id, d_id, numOrders])
+	orders = session.execute('SELECT o_id, o_c_id, o_entry_d, o_o_lines from "order" WHERE o_w_id=%s AND o_d_id=%s order by o_id desc LIMIT %s', [w_id, d_id, numOrders])
 	
 	# Keep a copy of orders in memory so we can iterate over it
 	# as many times as needed
