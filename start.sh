@@ -17,14 +17,14 @@ else
 	echo "changing keyspace replication to $replication on cassandra node"
 	cqlsh -e "alter keyspace cs4224 with replication = {'class': 'SimpleStrategy', replication_factor' : $replication}"
 	echo "loading directory"
-	python load_data.py $datadirname ;
+	python2.7 load_data.py $datadirname ;
 
 	for i in $(seq 0 $(($numclients-2))); do
 		echo "Starting client " $i
-		python driver.py $xactdirname $i $logfile&
+		python2.7 driver.py $xactdirname $i $logfile&
 	done
 	echo "Starting client " $(($numclients-1))
-	python driver.py $xactdirname $(($numclients-1)) $logfile ;
+	python2.7 driver.py $xactdirname $(($numclients-1)) $logfile ;
 	wait $!
 	sleep 5
 fi
