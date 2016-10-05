@@ -1,6 +1,6 @@
 from cassandra.cluster import Cluster 
 from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL
-from cassandra.query import BatchStatement, SimpleStatement
+from cassandra.query import BatchStatement, SimpleStatement, ValueSequence
 from datetime import datetime
 import time
 import udt
@@ -16,20 +16,27 @@ def delivery(wid, carrierid, session):
 
 	#getting order info
 	oldestDistrictOrder = []
-	for i in range(1,11):
-		district_res = session.execute(
-			"""
-			SELECT *
-			FROM "order"
-			WHERE o_carrier_id = %s AND o_d_id = %s AND o_w_id = %s
-			order by o_id ASC
-			limit 1
-			ALLOW FILTERING
-			""",
-			(-1, i, wid)
-			)
-		for row in district_res:
-			oldestDistrictOrder.append(row)
+	district_ids = range(1, 11)
+	oldestDistrictOrder = session.execute(
+		"""
+		SELECT * from "order"
+		WHERE o_w_id=%s AND o_d_id IN %s
+		ORDER BY o_id ASC PER PARTITION LIMIT 1
+		""", [wid, ValueSequence(district_ids)])
+	# for i in range(1,11):
+	# 	district_res = session.execute(
+	# 		"""
+	# 		SELECT *
+	# 		FROM "order"
+	# 		WHERE o_carrier_id = %s AND o_d_id = %s AND o_w_id = %s
+	# 		order by o_id ASC
+	# 		limit 1
+	# 		ALLOW FILTERING
+	# 		""",
+	# 		(-1, i, wid)
+	# 		)
+	# 	for row in district_res:
+	# 		oldestDistrictOrder.append(row)
 	#get customer info
 	custBal = dict()
 	custDelCnt = dict()
