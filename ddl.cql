@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS cs4224.customer_balance (
 c_w_id int,
 c_d_id int,
 c_id int, 
-c_balance,
-primary key((c_w_id, c,d_id, c_id), c_balance)
+c_balance decimal,
+primary key((c_w_id, c_d_id, c_id), c_balance)
 )with clustering order by (c_balance desc);
 
 
