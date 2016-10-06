@@ -20,9 +20,10 @@ def delivery(wid, carrierid, session):
 	oldestDistrictOrder = session.execute(
 		"""
 		SELECT * from "order"
-		WHERE o_w_id=%s AND o_d_id IN %s
-		ORDER BY o_id ASC PER PARTITION LIMIT 1
-		""", [wid, ValueSequence(district_ids)])
+		WHERE o_w_id=%s AND o_d_id IN %s AND o_carrier_id = %s
+		PER PARTITION LIMIT 2
+		ALLOW FILTERING
+		""", [wid, ValueSequence(district_ids), -1])
 	# for i in range(1,11):
 	# 	district_res = session.execute(
 	# 		"""
@@ -83,6 +84,7 @@ def delivery(wid, carrierid, session):
 		session.execute(batch)
 		batch.clear()
 # cluster = Cluster()
+# cluster = cluster.connect(KEYSPACE)
 # delivery(5, 11, cluster)
-# time = int(time.mktime(datetime.now().timetuple())*1000)
+# # time = int(time.mktime(datetime.now().timetuple())*1000)
 # print time
