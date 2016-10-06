@@ -21,7 +21,7 @@ def delivery(wid, carrierid, session):
 		"""
 		SELECT * from "order"
 		WHERE o_w_id=%s AND o_d_id IN %s AND o_carrier_id = %s
-		PER PARTITION LIMIT 2
+		PER PARTITION LIMIT 1
 		ALLOW FILTERING
 		""", [wid, ValueSequence(district_ids), -1])
 	# for i in range(1,11):
