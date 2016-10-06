@@ -122,20 +122,27 @@ def populateCustomers(dirname, cluster):
 	# Populate DB
 	cluster.register_user_type(KEYSPACE, 'address', udt.Address)
 	session = cluster.connect(KEYSPACE)
-	insert_customer = session.prepare('INSERT INTO customer (c_w_id, c_d_id, c_id, c_first, c_middle, c_last, c_address, c_phone, c_since, c_credit, c_credit_lim, c_discount, c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+	insert_customer = session.prepare('INSERT INTO customer (c_w_id, c_d_id, c_id, c_first, c_middle, c_last, c_address, c_phone, c_since, c_credit, c_credit_lim, c_discount, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+	insert_cbalance = session.prepare('INSERT INTO customer_balance (c_w_id, c_d_id, c_id, c_balance) VALUES (?, ?, ?, ?)')
 	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
+	batch2 = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
 	for (w_id, d_id), clist in groupby(sorted(customers, key=lambda c: (c['C_W_ID'], c['C_D_ID'])), lambda c: (c['C_W_ID'], c['C_D_ID'])):
 		batchsz = 0
 		for c in clist:
-			batch.add(insert_customer, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_FIRST'], c['C_MIDDLE'], c['C_LAST'], c['C_ADDRESS'], c['C_PHONE'], c['C_SINCE'], c['C_CREDIT'], c['C_CREDIT_LIM'], c['C_DISCOUNT'], c['C_BALANCE'], c['C_YTD_PAYMENT'], c['C_PAYMENT_CNT'], c['C_DELIVERY_CNT'], c['C_DATA']])
+			batch.add(insert_customer, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_FIRST'], c['C_MIDDLE'], c['C_LAST'], c['C_ADDRESS'], c['C_PHONE'], c['C_SINCE'], c['C_CREDIT'], c['C_CREDIT_LIM'], c['C_DISCOUNT'], c['C_YTD_PAYMENT'], c['C_PAYMENT_CNT'], c['C_DELIVERY_CNT'], c['C_DATA']])
+			batch2.add(insert_cbalance, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_BALANCE']])
 			batchsz+=1
 			if batchsz >= 1500:
 				session.execute(batch)
+				session.execute(batch)
 				batch.clear()
+				batch2.clear()
 				batchsz = 0
 		if batchsz > 0:
 			session.execute(batch)
+			session.execute(batch2)
 			batch.clear()
+			batch2.clear()
 	session.shutdown()
 
 # @param dirname Directory path where "item.csv" is stored
