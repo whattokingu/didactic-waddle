@@ -134,7 +134,7 @@ def populateCustomers(dirname, cluster):
 			batchsz+=1
 			if batchsz >= 1500:
 				session.execute(batch)
-				session.execute(batch)
+				session.execute(batch2)
 				batch.clear()
 				batch2.clear()
 				batchsz = 0
