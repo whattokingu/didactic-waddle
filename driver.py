@@ -15,7 +15,7 @@ from delivery import delivery
 from order_status import orderStatus
 from stockLevel import stockLevel
 from popular_item import popularItems
-from topbalance2 import topbalance
+from topbalance import topbalance
 
 # @params dirname where the xact files reside
 # @params file filename(should be an int) without extension
