@@ -44,6 +44,7 @@ c_middle text,
 c_last text,
 c_address frozen<address>,
 c_phone text,
+c_balance decimal,
 c_since timestamp,
 c_credit text,
 c_credit_lim decimal,
@@ -61,7 +62,7 @@ c_w_id int,
 c_d_id int,
 c_id int, 
 c_balance decimal,
-primary key((c_w_id, c_d_id, c_id), c_balance)
+primary key((c_d_id), c_balance, c_w_id, c_id)
 )with clustering order by (c_balance desc);
 
 

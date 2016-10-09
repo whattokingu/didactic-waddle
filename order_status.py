@@ -1,3 +1,5 @@
+
+from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement, named_tuple_factory
 from dbconf import KEYSPACE, LOGGING_LEVEL, PRINT_OUTPUT
 from udt import OrderLine
@@ -9,13 +11,13 @@ def orderStatus(w_id, d_id, c_id, session):
 	logger.info("processing order status")
 	# Get user data and last order asynchronously
 	# to keep chances of screw up due to interleaving transactions to minimum
-	userDataFuture = session.execute_async('SELECT c_first, c_middle, c_last, c_balance FROM customer WHERE c_w_id=%s AND c_d_id=%s AND c_id=%s', [w_id, d_id, c_id])
+	# userDataFuture = session.execute_async('SELECT c_first, c_middle, c_last, c_balance FROM customer WHERE c_w_id=%s AND c_d_id=%s AND c_id=%s', [w_id, d_id, c_id])
+	userDataFuture = session.execute_async('SELECT c_first, c_middle, c_last, c_balance FROM customer WHERE c_w_id = %s AND c_d_id = %s AND c_id = %s', [w_id, d_id, c_id])
 	lastOrderFuture = session.execute_async('SELECT o_id, o_entry_d, o_carrier_id, o_o_lines FROM "order" WHERE o_w_id=%s AND o_d_id=%s AND o_c_id=%s', [w_id, d_id, c_id])
 	
 	try:
 		userData = userDataFuture.result().current_rows
 		lastOrder = max(lastOrderFuture.result(), key = lambda o: o.o_id)
-		print lastOrder
 
 		if len(userData)==0:
 			logger.error("Invalid user")
@@ -24,6 +26,7 @@ def orderStatus(w_id, d_id, c_id, session):
 
 		userData = userData[0]
 		if PRINT_OUTPUT:
+			#print '%s %s %s with balance %f' % (userData.c_first, userData.c_middle, userData.c_last, userData.c_balance)
 			print '%s %s %s with balance %f' % (userData.c_first, userData.c_middle, userData.c_last, userData.c_balance)
 			# for order in lastOrder:
 			print 'Order ID: %d' % (lastOrder.o_id)
@@ -42,3 +45,7 @@ def orderStatus(w_id, d_id, c_id, session):
 		logger.error('An error occurred fetching data from database')
 		logger.error(str(e))
 		session.shutdown()
+
+cluster = Cluster()
+cluster = cluster.connect(KEYSPACE)
+orderStatus(1, 1, 1, cluster)

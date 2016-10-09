@@ -1,3 +1,7 @@
+import sys
+sys.path.insert(0, '../')
+
+
 from cassandra.cluster import Cluster 
 from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL
 from cassandra.query import BatchStatement, SimpleStatement, ValueSequence
@@ -24,39 +28,32 @@ def delivery(wid, carrierid, session):
 		PER PARTITION LIMIT 1
 		ALLOW FILTERING
 		""", [wid, ValueSequence(district_ids), -1])
-	# for i in range(1,11):
-	# 	district_res = session.execute(
-	# 		"""
-	# 		SELECT *
-	# 		FROM "order"
-	# 		WHERE o_carrier_id = %s AND o_d_id = %s AND o_w_id = %s
-	# 		order by o_id ASC
-	# 		limit 1
-	# 		ALLOW FILTERING
-	# 		""",
-	# 		(-1, i, wid)
-	# 		)
-	# 	for row in district_res:
-	# 		oldestDistrictOrder.append(row)
-	#get customer info
 	custBal = dict()
 	custDelCnt = dict()
+	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL) 
 	for order in oldestDistrictOrder:
-		cust_res = session.execute(
+		cust_delivery_res = session.execute(
 			"""
-			SELECT c_balance, c_delivery_cnt
+			SELECT c_delivery_cnt
 			FROM customer
-			WHERE c_id = %s AND c_d_id = %s and c_w_id = %s
+			WHERE c_id = %s AND c_d_id = %s AND c_w_id = %s
 			""",
 			(order.o_c_id, order.o_d_id, order.o_w_id)
 			)
-		for row in cust_res:
-			custBal[order.o_c_id] = row.c_balance
+		for row in cust_delivery_res:
 			custDelCnt[order.o_c_id] = row.c_delivery_cnt
+	
+		cust_balance_res = session.execute(
+			"""
+			SELECT c_balance
+			FROM customer
+			WHERE c_id = %s AND c_d_id = %s AND c_w_id = %s
+			""",
+			(order.o_c_id, order.o_d_id, order.o_w_id)
+			)
+		for row in cust_balance_res:
+			custBal[order.o_c_id] = row.c_balance
 
-	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL) 
-	# todo: add in delivery date
-	for order in oldestDistrictOrder:
 		ol = order.o_o_lines
 		totalAmt = 0
 		delTime = int(time.mktime(datetime.now().timetuple()) * 1000) #current time in int
@@ -73,18 +70,38 @@ def delivery(wid, carrierid, session):
 			)
 		batch.add(orderUpdate, [carrierid, orders, order.o_id, order.o_d_id, order.o_w_id])
 		#update customer balance
+		#batch.add(
+		#	"""
+		#	UPDATE customer			
+		#	SET c_balance = %s, c_delivery_cnt = %s
+		#	WHERE c_id = %s AND c_d_id = %s AND c_w_id = %s
+		#	""",
+		#	(custBal[order.o_c_id] + totalAmt, custDelCnt[order.o_c_id] + 1, order.o_c_id, order.o_d_id, order.o_w_id)
+		#	)
+		batch.add(
+			"""
+			DELETE FROM customer_balance
+			WHERE c_w_id = %s AND c_d_id = %s AND c_id=%s AND c_balance = %s
+			""",
+			(order.o_w_id, order.o_d_id, order.o_c_id, custBal[order.o_c_id])
+			)
+		batch.add(
+			"""
+			INSERT INTO customer_balance (c_w_id, c_d_id, c_id, c_balance) VALUES (%s, %s, %s, %s)
+			""",
+			(order.o_w_id, order.o_d_id, order.o_c_id, custBal[order.o_c_id] + totalAmt)
+			)
 		batch.add(
 			"""
 			UPDATE customer
-			SET c_balance = %s, c_delivery_cnt = %s
-			WHERE c_id = %s AND c_d_id = %s AND c_w_id = %s
+			SET c_delivery_cnt = %s, c_balance=%s
+			WHERE c_id = %s AND c_d_id = %s AND c_w_id =%s
 			""",
-			(custBal[order.o_c_id] + totalAmt, custDelCnt[order.o_c_id] + 1, order.o_c_id, order.o_d_id, order.o_w_id)
+			(custDelCnt[order.o_c_id] + 1, custBal[order.o_c_id] + totalAmt, order.o_c_id, order.o_d_id, order.o_w_id)
 			)
 		session.execute(batch)
 		batch.clear()
 # cluster = Cluster()
 # cluster = cluster.connect(KEYSPACE)
 # delivery(5, 11, cluster)
-# # time = int(time.mktime(datetime.now().timetuple())*1000)
-# print time
+
