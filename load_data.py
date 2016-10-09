@@ -222,7 +222,7 @@ def populateOrders(dirname, cluster):
 		for o in orderlist:
 			batch.add(insert_order, [w_id, d_id, o['O_ID'], o['O_C_ID'], o['O_CARRIER_ID'], o['O_OL_CNT'], o['O_ALL_LOCAL'], o['O_ENTRY_D'], o['O_O_LINES']])
 			batchsz+=1
-			if batchsz >= 1500:
+			if batchsz >= 100:
 				session.execute(batch)
 				batch.clear()
 				batchsz = 0
