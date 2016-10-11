@@ -9,13 +9,12 @@ def stockLevel(wid, did, threshold, L, session):
 	logging.basicConfig(level=LOGGING_LEVEL)
 	logger.info("processing stock level")
 
-	# Orders partitioned by (w_id, d_id) and clustered by o_id in DESC order
-	# So 1 query on correct partition without ORDER BY and applying LIMIT is enough
+	# Orders partitioned by (w_id, d_id) and clustered by o_id in ASC order
 	orderlines_res = session.execute(
 		"""
 		SELECT o_o_lines
 		FROM "order"
-		WHERE o_w_id = %s AND o_d_id = %s LIMIT %s
+		WHERE o_w_id = %s AND o_d_id = %s ORDER BY o_id DESC LIMIT %s
 		""",
 		(wid, did, L))
 	stockId = set()
