@@ -124,25 +124,10 @@ def populateCustomers(dirname, cluster):
 	session = cluster.connect(KEYSPACE)
 	insert_customer = session.prepare('INSERT INTO customer (c_w_id, c_d_id, c_id, c_first, c_middle, c_last, c_address, c_phone, c_since, c_balance, c_credit, c_credit_lim, c_discount, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
 	insert_cbalance = session.prepare('INSERT INTO customer_balance (c_w_id, c_d_id, c_id, c_balance) VALUES (?, ?, ?, ?)')
-	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
-	c_bal_batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
 	for (w_id, d_id), clist in groupby(sorted(customers, key=lambda c: (c['C_W_ID'], c['C_D_ID'])), lambda c: (c['C_W_ID'], c['C_D_ID'])):
-		batchsz = 0
 		for c in clist:
-			batch.add(insert_customer, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_FIRST'], c['C_MIDDLE'], c['C_LAST'], c['C_ADDRESS'], c['C_PHONE'],c['C_BALANCE'], c['C_SINCE'], c['C_CREDIT'], c['C_CREDIT_LIM'], c['C_DISCOUNT'], c['C_YTD_PAYMENT'], c['C_PAYMENT_CNT'], c['C_DELIVERY_CNT'], c['C_DATA']])
-			c_bal_batch.add(insert_cbalance, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_BALANCE']])
-			batchsz+=1
-			if batchsz >= 100:
-				session.execute(batch)
-				session.execute(c_bal_batch)
-				batch.clear()
-				c_bal_batch.clear()
-				batchsz = 0
-		if batchsz > 0:
-			session.execute(batch)
-			session.execute(c_bal_batch)
-			batch.clear()
-			c_bal_batch.clear()
+			session.execute(insert_customer, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_FIRST'], c['C_MIDDLE'], c['C_LAST'], c['C_ADDRESS'], c['C_PHONE'],c['C_BALANCE'], c['C_SINCE'], c['C_CREDIT'], c['C_CREDIT_LIM'], c['C_DISCOUNT'], c['C_YTD_PAYMENT'], c['C_PAYMENT_CNT'], c['C_DELIVERY_CNT'], c['C_DATA']])
+			session.execute(insert_cbalance, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_BALANCE']])
 	session.shutdown()
 
 # @param dirname Directory path where "item.csv" is stored
@@ -216,19 +201,9 @@ def populateOrders(dirname, cluster):
 	cluster.register_user_type(KEYSPACE, 'order_line', udt.OrderLine)
 	session = cluster.connect(KEYSPACE)
 	insert_order = session.prepare('INSERT INTO "order" (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d, o_o_lines) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
-	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
 	for (w_id, d_id), orderlist in groupby(sorted(orders, key=lambda o: (o['O_W_ID'], o['O_D_ID'])), lambda o: (o['O_W_ID'], o['O_D_ID'])):
-		batchsz = 0
 		for o in orderlist:
-			batch.add(insert_order, [w_id, d_id, o['O_ID'], o['O_C_ID'], o['O_CARRIER_ID'], o['O_OL_CNT'], o['O_ALL_LOCAL'], o['O_ENTRY_D'], o['O_O_LINES']])
-			batchsz+=1
-			if batchsz >= 100:
-				session.execute(batch)
-				batch.clear()
-				batchsz = 0
-		if batchsz > 0:
-			session.execute(batch)
-			batch.clear()
+			session.execute(insert_order, [w_id, d_id, o['O_ID'], o['O_C_ID'], o['O_CARRIER_ID'], o['O_OL_CNT'], o['O_ALL_LOCAL'], o['O_ENTRY_D'], o['O_O_LINES']])
 	session.shutdown()
 
 # @param dirname Directory path where "stock.csv" is stored
@@ -261,21 +236,11 @@ def populateStocks(dirname, cluster):
 		namemap [row.i_id] = row.i_name
 
 	insert_stock = session.prepare('INSERT INTO stock (s_w_id, s_i_id, s_price, s_name, s_quantity, s_ytd, s_order_cnt, s_remote_cnt, s_dist_01, s_dist_02, s_dist_03, s_dist_04, s_dist_05, s_dist_06, s_dist_07, s_dist_08, s_dist_09, s_dist_10, s_data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-	batch = BatchStatement(consistency_level=CONSISTENCY_LEVEL)
 	for w_id, slist in groupby(sorted(stocks, key=lambda s: s['S_W_ID']), lambda s: s['S_W_ID']):
-		batchsz = 0
 		for s in slist:
 			price = pricemap.get(s['S_I_ID'])
 			name = namemap.get(s['S_I_ID'])
-			batch.add(insert_stock, [w_id, s['S_I_ID'], price, name, s['S_QUANTITY'], s['S_YTD'], s['S_ORDER_CNT'], s['S_REMOTE_CNT'], s['S_DIST_01'], s['S_DIST_02'], s['S_DIST_03'], s['S_DIST_04'], s['S_DIST_05'], s['S_DIST_06'], s['S_DIST_07'], s['S_DIST_08'], s['S_DIST_09'], s['S_DIST_10'], s['S_DATA']])
-			batchsz+=1
-			if batchsz >= 100:
-				session.execute(batch)
-				batch.clear()
-				batchsz = 0
-		if batchsz > 0:
-			session.execute(batch)
-			batch.clear()
+			session.execute(insert_stock, [w_id, s['S_I_ID'], price, name, s['S_QUANTITY'], s['S_YTD'], s['S_ORDER_CNT'], s['S_REMOTE_CNT'], s['S_DIST_01'], s['S_DIST_02'], s['S_DIST_03'], s['S_DIST_04'], s['S_DIST_05'], s['S_DIST_06'], s['S_DIST_07'], s['S_DIST_08'], s['S_DIST_09'], s['S_DIST_10'], s['S_DATA']])
 	session.shutdown()
 
 if __name__ == "__main__":
@@ -290,11 +255,11 @@ if __name__ == "__main__":
 	cluster = Cluster()
 
 	cleanDb(cluster)
+	populateCustomers(dirname, cluster)
 	populateWarehouses(dirname, cluster)
 	populateDistricts(dirname, cluster)
 	populateItems(dirname, cluster)
 	populateStocks(dirname, cluster)
-	populateCustomers(dirname, cluster)
 	populateOrders(dirname, cluster)
 	
 	cluster.shutdown()
