@@ -132,7 +132,7 @@ def populateCustomers(dirname, cluster):
 			batch.add(insert_customer, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_FIRST'], c['C_MIDDLE'], c['C_LAST'], c['C_ADDRESS'], c['C_PHONE'],c['C_BALANCE'], c['C_SINCE'], c['C_CREDIT'], c['C_CREDIT_LIM'], c['C_DISCOUNT'], c['C_YTD_PAYMENT'], c['C_PAYMENT_CNT'], c['C_DELIVERY_CNT'], c['C_DATA']])
 			c_bal_batch.add(insert_cbalance, [c['C_W_ID'], c['C_D_ID'], c['C_ID'], c['C_BALANCE']])
 			batchsz+=1
-			if batchsz >= 1000:
+			if batchsz >= 100:
 				session.execute(batch)
 				session.execute(c_bal_batch)
 				batch.clear()
@@ -269,7 +269,7 @@ def populateStocks(dirname, cluster):
 			name = namemap.get(s['S_I_ID'])
 			batch.add(insert_stock, [w_id, s['S_I_ID'], price, name, s['S_QUANTITY'], s['S_YTD'], s['S_ORDER_CNT'], s['S_REMOTE_CNT'], s['S_DIST_01'], s['S_DIST_02'], s['S_DIST_03'], s['S_DIST_04'], s['S_DIST_05'], s['S_DIST_06'], s['S_DIST_07'], s['S_DIST_08'], s['S_DIST_09'], s['S_DIST_10'], s['S_DATA']])
 			batchsz+=1
-			if batchsz >= 1500:
+			if batchsz >= 100:
 				session.execute(batch)
 				batch.clear()
 				batchsz = 0
