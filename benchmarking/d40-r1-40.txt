@@ -1,0 +1,122 @@
+2016-10-12 01:26:49,370 - __main__ - INFO - Client No. 24: starting transactions
+2016-10-12 01:26:49,376 - __main__ - INFO - Client No. 6: starting transactions
+2016-10-12 01:26:49,378 - __main__ - INFO - Client No. 1: starting transactions
+2016-10-12 01:26:49,384 - __main__ - INFO - Client No. 0: starting transactions
+2016-10-12 01:26:49,385 - __main__ - INFO - Client No. 23: starting transactions
+2016-10-12 01:26:49,386 - __main__ - INFO - Client No. 3: starting transactions
+2016-10-12 01:26:49,387 - __main__ - INFO - Client No. 12: starting transactions
+2016-10-12 01:26:49,388 - __main__ - INFO - Client No. 10: starting transactions
+2016-10-12 01:26:49,388 - __main__ - INFO - Client No. 9: starting transactions
+2016-10-12 01:26:49,389 - __main__ - INFO - Client No. 5: starting transactions
+2016-10-12 01:26:49,403 - __main__ - INFO - Client No. 13: starting transactions
+2016-10-12 01:26:49,405 - __main__ - INFO - Client No. 2: starting transactions
+2016-10-12 01:26:49,410 - __main__ - INFO - Client No. 8: starting transactions
+2016-10-12 01:26:49,421 - __main__ - INFO - Client No. 18: starting transactions
+2016-10-12 01:26:49,425 - __main__ - INFO - Client No. 20: starting transactions
+2016-10-12 01:26:49,432 - __main__ - INFO - Client No. 26: starting transactions
+2016-10-12 01:26:49,453 - __main__ - INFO - Client No. 33: starting transactions
+2016-10-12 01:26:49,453 - __main__ - INFO - Client No. 34: starting transactions
+2016-10-12 01:26:49,455 - __main__ - INFO - Client No. 35: starting transactions
+2016-10-12 01:26:49,456 - __main__ - INFO - Client No. 38: starting transactions
+2016-10-12 01:26:49,459 - __main__ - INFO - Client No. 37: starting transactions
+2016-10-12 01:26:49,469 - __main__ - INFO - Client No. 22: starting transactions
+2016-10-12 01:26:49,474 - __main__ - INFO - Client No. 14: starting transactions
+2016-10-12 01:26:49,475 - __main__ - INFO - Client No. 16: starting transactions
+2016-10-12 01:26:49,476 - __main__ - INFO - Client No. 36: starting transactions
+2016-10-12 01:26:49,477 - __main__ - INFO - Client No. 39: starting transactions
+2016-10-12 01:26:49,478 - __main__ - INFO - Client No. 27: starting transactions
+2016-10-12 01:26:49,485 - __main__ - INFO - Client No. 15: starting transactions
+2016-10-12 01:26:49,486 - __main__ - INFO - Client No. 31: starting transactions
+2016-10-12 01:26:49,488 - __main__ - INFO - Client No. 30: starting transactions
+2016-10-12 01:26:49,494 - __main__ - INFO - Client No. 7: starting transactions
+2016-10-12 01:26:49,495 - __main__ - INFO - Client No. 25: starting transactions
+2016-10-12 01:26:49,502 - __main__ - INFO - Client No. 32: starting transactions
+2016-10-12 01:26:49,507 - __main__ - INFO - Client No. 21: starting transactions
+2016-10-12 01:26:49,508 - __main__ - INFO - Client No. 4: starting transactions
+2016-10-12 01:26:49,529 - __main__ - INFO - Client No. 19: starting transactions
+2016-10-12 01:26:49,531 - __main__ - INFO - Client No. 28: starting transactions
+2016-10-12 01:26:49,538 - __main__ - INFO - Client No. 11: starting transactions
+2016-10-12 01:26:49,560 - __main__ - INFO - Client No. 17: starting transactions
+2016-10-12 01:26:49,562 - __main__ - INFO - Client No. 29: starting transactions
+2016-10-12 01:28:48,990 - __main__ - ERROR - An Error has occured:
+2016-10-12 01:28:48,991 - __main__ - ERROR - Error from server: code=1100 [Coordinator node timed out waiting for replica nodes' responses] message="Operation timed out - received only 0 responses." info={'received_responses': 0, 'required_responses': 1, 'consistency': 'ANY'}
+2016-10-12 01:28:48,995 - __main__ - INFO - Client No. 24: transaction Stats: 441 transactions in 119624.16482 ms
+2016-10-12 01:28:48,995 - __main__ - INFO - Client No. 24: ending transactions
+2016-10-12 01:49:06,353 - __main__ - INFO - Client No. 23: transaction Stats: 10029 transactions in 1336967.38505 ms
+2016-10-12 01:49:06,353 - __main__ - INFO - Client No. 23: ending transactions
+2016-10-12 01:51:24,874 - __main__ - INFO - Client No. 33: transaction Stats: 9736 transactions in 1475421.05794 ms
+2016-10-12 01:51:24,875 - __main__ - INFO - Client No. 33: ending transactions
+2016-10-12 01:59:50,835 - __main__ - INFO - Client No. 10: transaction Stats: 11786 transactions in 1981447.0439 ms
+2016-10-12 01:59:50,836 - __main__ - INFO - Client No. 10: ending transactions
+2016-10-12 02:01:59,964 - __main__ - INFO - Client No. 28: transaction Stats: 13300 transactions in 2110432.00183 ms
+2016-10-12 02:01:59,964 - __main__ - INFO - Client No. 28: ending transactions
+2016-10-12 02:03:25,594 - __main__ - INFO - Client No. 1: transaction Stats: 12346 transactions in 2196215.21115 ms
+2016-10-12 02:03:25,594 - __main__ - INFO - Client No. 1: ending transactions
+2016-10-12 02:03:48,874 - __main__ - INFO - Client No. 14: transaction Stats: 15489 transactions in 2219398.75793 ms
+2016-10-12 02:03:48,874 - __main__ - INFO - Client No. 14: ending transactions
+2016-10-12 02:04:09,984 - __main__ - INFO - Client No. 20: transaction Stats: 8733 transactions in 2240558.55799 ms
+2016-10-12 02:04:09,985 - __main__ - INFO - Client No. 20: ending transactions
+2016-10-12 02:04:20,094 - __main__ - INFO - Client No. 37: transaction Stats: 14971 transactions in 2250634.57799 ms
+2016-10-12 02:04:20,094 - __main__ - INFO - Client No. 37: ending transactions
+2016-10-12 02:05:20,408 - __main__ - INFO - Client No. 2: transaction Stats: 11926 transactions in 2311002.40016 ms
+2016-10-12 02:05:20,408 - __main__ - INFO - Client No. 2: ending transactions
+2016-10-12 02:05:42,039 - __main__ - INFO - Client No. 7: transaction Stats: 11240 transactions in 2332544.23809 ms
+2016-10-12 02:05:42,039 - __main__ - INFO - Client No. 7: ending transactions
+2016-10-12 02:08:56,866 - __main__ - INFO - Client No. 12: transaction Stats: 12417 transactions in 2527478.21712 ms
+2016-10-12 02:08:56,866 - __main__ - INFO - Client No. 12: ending transactions
+2016-10-12 02:09:00,135 - __main__ - INFO - Client No. 30: transaction Stats: 14934 transactions in 2530646.41714 ms
+2016-10-12 02:09:00,136 - __main__ - INFO - Client No. 30: ending transactions
+2016-10-12 02:10:08,244 - __main__ - INFO - Client No. 29: transaction Stats: 9813 transactions in 2598681.53191 ms
+2016-10-12 02:10:08,244 - __main__ - INFO - Client No. 29: ending transactions
+2016-10-12 02:12:20,516 - __main__ - INFO - Client No. 35: transaction Stats: 16160 transactions in 2731061.10001 ms
+2016-10-12 02:12:20,516 - __main__ - INFO - Client No. 35: ending transactions
+2016-10-12 02:15:29,969 - __main__ - INFO - Client No. 27: transaction Stats: 14132 transactions in 2920490.87 ms
+2016-10-12 02:15:29,969 - __main__ - INFO - Client No. 27: ending transactions
+2016-10-12 02:18:04,676 - __main__ - INFO - Client No. 9: transaction Stats: 14251 transactions in 3075287.83011 ms
+2016-10-12 02:18:04,677 - __main__ - INFO - Client No. 9: ending transactions
+2016-10-12 02:20:49,455 - __main__ - INFO - Client No. 22: transaction Stats: 14661 transactions in 3239982.795 ms
+2016-10-12 02:20:49,455 - __main__ - INFO - Client No. 22: ending transactions
+2016-10-12 02:21:12,360 - __main__ - INFO - Client No. 34: transaction Stats: 12935 transactions in 3262906.66199 ms
+2016-10-12 02:21:12,361 - __main__ - INFO - Client No. 34: ending transactions
+2016-10-12 02:21:15,767 - __main__ - INFO - Client No. 15: transaction Stats: 22385 transactions in 3266281.69894 ms
+2016-10-12 02:21:15,768 - __main__ - INFO - Client No. 15: ending transactions
+2016-10-12 02:23:47,934 - __main__ - INFO - Client No. 18: transaction Stats: 13903 transactions in 3418512.71605 ms
+2016-10-12 02:23:47,934 - __main__ - INFO - Client No. 18: ending transactions
+2016-10-12 02:23:57,399 - __main__ - INFO - Client No. 21: transaction Stats: 19252 transactions in 3427891.33716 ms
+2016-10-12 02:23:57,399 - __main__ - INFO - Client No. 21: ending transactions
+2016-10-12 02:25:47,855 - __main__ - INFO - Client No. 6: transaction Stats: 11218 transactions in 3538478.29604 ms
+2016-10-12 02:25:47,855 - __main__ - INFO - Client No. 6: ending transactions
+2016-10-12 02:25:53,923 - __main__ - INFO - Client No. 17: transaction Stats: 18341 transactions in 3544362.61678 ms
+2016-10-12 02:25:53,924 - __main__ - INFO - Client No. 17: ending transactions
+2016-10-12 02:26:18,541 - __main__ - INFO - Client No. 32: transaction Stats: 19927 transactions in 3569039.15 ms
+2016-10-12 02:26:18,542 - __main__ - INFO - Client No. 32: ending transactions
+2016-10-12 02:28:17,135 - __main__ - INFO - Client No. 36: transaction Stats: 12079 transactions in 3687658.29396 ms
+2016-10-12 02:28:17,135 - __main__ - INFO - Client No. 36: ending transactions
+2016-10-12 02:28:34,816 - __main__ - INFO - Client No. 0: transaction Stats: 11922 transactions in 3705432.45697 ms
+2016-10-12 02:28:34,817 - __main__ - INFO - Client No. 0: ending transactions
+2016-10-12 02:28:42,305 - __main__ - INFO - Client No. 13: transaction Stats: 14333 transactions in 3712901.39294 ms
+2016-10-12 02:28:42,305 - __main__ - INFO - Client No. 13: ending transactions
+2016-10-12 02:28:59,291 - __main__ - INFO - Client No. 19: transaction Stats: 14859 transactions in 3729761.17802 ms
+2016-10-12 02:28:59,291 - __main__ - INFO - Client No. 19: ending transactions
+2016-10-12 02:31:40,296 - __main__ - INFO - Client No. 26: transaction Stats: 13982 transactions in 3890863.51085 ms
+2016-10-12 02:31:40,296 - __main__ - INFO - Client No. 26: ending transactions
+2016-10-12 02:33:33,842 - __main__ - INFO - Client No. 38: transaction Stats: 15969 transactions in 4004385.60104 ms
+2016-10-12 02:33:33,843 - __main__ - INFO - Client No. 38: ending transactions
+2016-10-12 02:40:05,025 - __main__ - INFO - Client No. 16: transaction Stats: 17091 transactions in 4395549.55006 ms
+2016-10-12 02:40:05,026 - __main__ - INFO - Client No. 16: ending transactions
+2016-10-12 02:40:26,341 - __main__ - INFO - Client No. 25: transaction Stats: 13388 transactions in 4416845.37601 ms
+2016-10-12 02:40:26,341 - __main__ - INFO - Client No. 25: ending transactions
+2016-10-12 02:42:33,231 - __main__ - INFO - Client No. 5: transaction Stats: 14475 transactions in 4543842.16094 ms
+2016-10-12 02:42:33,231 - __main__ - INFO - Client No. 5: ending transactions
+2016-10-12 02:45:20,531 - __main__ - INFO - Client No. 11: transaction Stats: 16329 transactions in 4710992.72609 ms
+2016-10-12 02:45:20,531 - __main__ - INFO - Client No. 11: ending transactions
+2016-10-12 02:47:27,545 - __main__ - INFO - Client No. 31: transaction Stats: 20858 transactions in 4838059.33404 ms
+2016-10-12 02:47:27,546 - __main__ - INFO - Client No. 31: ending transactions
+2016-10-12 03:05:43,029 - __main__ - INFO - Client No. 4: transaction Stats: 19816 transactions in 5933520.37406 ms
+2016-10-12 03:05:43,029 - __main__ - INFO - Client No. 4: ending transactions
+2016-10-12 03:10:09,525 - __main__ - INFO - Client No. 8: transaction Stats: 25573 transactions in 6200114.5649 ms
+2016-10-12 03:10:09,525 - __main__ - INFO - Client No. 8: ending transactions
+2016-10-12 03:14:47,939 - __main__ - INFO - Client No. 39: transaction Stats: 17129 transactions in 6478461.761 ms
+2016-10-12 03:14:47,939 - __main__ - INFO - Client No. 39: ending transactions
+2016-10-12 03:28:45,907 - __main__ - INFO - Client No. 3: transaction Stats: 24086 transactions in 7316520.72692 ms
+2016-10-12 03:28:45,907 - __main__ - INFO - Client No. 3: ending transactions
