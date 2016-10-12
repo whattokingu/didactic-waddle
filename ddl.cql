@@ -86,6 +86,7 @@ o_entry_d timestamp,
 o_o_lines list<frozen<order_line>>,
 primary key ((o_w_id, o_d_id), o_id));
 
+CREATE INDEX order_o_id on cs4224."order" (o_id);
 CREATE INDEX order_o_c_id on cs4224."order" (o_c_id);
 
 CREATE TABLE IF NOT EXISTS cs4224.stock (
