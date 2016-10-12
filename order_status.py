@@ -46,6 +46,6 @@ def orderStatus(w_id, d_id, c_id, session):
 		logger.error(str(e))
 		session.shutdown()
 
-cluster = Cluster()
-cluster = cluster.connect(KEYSPACE)
-orderStatus(1, 1, 1, cluster)
+#cluster = Cluster()
+#cluster = cluster.connect(KEYSPACE)
+#rderStatus(1, 1, 1, cluster)
