@@ -2,16 +2,20 @@
 
 if [ "$#" -ne 4 ];
 then
-	echo "wrong number of arguments. Correct call: start.sh <dirname> <numclients> <offset> <logfile>"
+	echo "wrong number of arguments. Correct call: start.sh <dirname> <replication> <numclients> <offset> <logfile>"
 else
 
 	xactdirname=$1-xact-revised-b
-	numclients=$2
-	offset=$3
-	logfile=$4
+	replication=$2
+	numclients=$3
+	offset=$4
+	logfile=$5
 	echo "xact directory: " $xactdirname
 	echo "starting drivers with number of clients: " $numclients
 	echo "xact file offset: " $offset
+	echo "replication factor: " $replication
+	echo "changing keyspace replication to $replication on cassandra node"
+	cqlsh -e "alter keyspace cs4224 with replication = {'class': 'SimpleStrategy', replication_factor' : $replication}"
 
 	for i in $(seq 0 $(($numclients-2))); do
 		echo "Starting client " $(($i + $offset))
