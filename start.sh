@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$#" -ne 4 ];
+if [ "$#" -ne 5 ];
 then
 	echo "wrong number of arguments. Correct call: start.sh <dirname> <replication> <numclients> <offset> <logfile>"
 else
