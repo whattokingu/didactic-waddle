@@ -9,13 +9,13 @@ from datetime import datetime
 from cassandra.cluster import Cluster
 from dbconf import KEYSPACE, CONSISTENCY_LEVEL, LOGGING_LEVEL
 
-from newOrder import newOrder
-from custPayment import custPayment
+from new_order import newOrder
+from cust_payment import custPayment
 from delivery import delivery
 from order_status import orderStatus
-from stockLevel import stockLevel
+from stock_level import stockLevel
 from popular_item import popularItems
-from topbalance import topbalance
+from top_balance import topbalance
 
 # @params dirname where the xact files reside
 # @params file filename(should be an int) without extension
